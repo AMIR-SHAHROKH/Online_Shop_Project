@@ -5,8 +5,8 @@ from .models import Product
 class ProductDetailView(View):
     def get(self, request, *args, **kwargs):
         products = Product.objects.all()
-        return render(request, 'products/products_detail.html', {'product': products})
-
+        return render(request, 'products/products_detail.html', {'products': products})
+  
 class MainPageView(View):
     template_name = 'products/main_page.html'
 

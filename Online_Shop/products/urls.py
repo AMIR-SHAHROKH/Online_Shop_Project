@@ -6,6 +6,6 @@ from .views import MainPageView
 app_name = "products"
 
 urlpatterns = [
-    path('product/<int:product_id>/', views.ProductDetailView.as_view() , name='product_detail'),
+    path('1', views.ProductDetailView.as_view() , name='product_detail'),
     path('', views.MainPageView.as_view(), name='main_page'),
 ]
