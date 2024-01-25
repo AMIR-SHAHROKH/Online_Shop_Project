@@ -10,11 +10,10 @@ class Category(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='upload_to()')
+    image = models.ImageField(upload_to='upload_to()',blank=True, null=True)
     description = models.TextField()
-    discount = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock_quantity = models.IntegerField()
+    discount = models.DecimalField(max_digits=10, decimal_places=1)
+    price = models.IntegerField()
     categories = models.ManyToManyField(Category, through='ProductCategory')
 
 class ProductCategory(models.Model):
