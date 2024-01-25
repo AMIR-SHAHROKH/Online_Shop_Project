@@ -58,3 +58,5 @@ local_settings.py
 # Ignore any backup or temporary files
 *~
 *.swp
+db.sqlite3
+.pys
