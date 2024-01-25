@@ -1,2 +1,60 @@
 .venv
 venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local development settings
+*.env
+*.sqlite3
+
+# Secret key
+secret_key.txt
+
+# Media files
+media/
+
+# Database
+db.sqlite3
+
+# Static files
+static/
+
+# Log files
+*.log
+
+# Virtual environment
+venv/
+env/
+ 
+# Ignore pipenv virtual environment
+/.venv/
+
+# Ignore IDE settings
+.idea/
+.vscode/
+
+# Ignore migrations
+**/migrations/
+
+# Ignore generated files
+*.DS_Store
+Thumbs.db
+
+# Ignore Python bytecode files
+*.pyc
+
+# Ignore coverage report
+htmlcov/
+
+# Ignore test database
+test_db.sqlite3
+
+# Ignore local configuration
+local_settings.py
+
+# Ignore any backup or temporary files
+*~
+*.swp
