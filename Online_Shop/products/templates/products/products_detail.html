@@ -3,32 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
-    <!-- Add Bootstrap CDN link -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Tww28Q2bG5ziAq41fi9uqLmAg7uF0KvMV5onbpx5wrSZBwXpTzMAW4NcXZ0" crossorigin="anonymous">
+    <title>Product Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<style>
+    body {
+            background-color: #f0f8ff; /* changed to light cyan */
+            color: #000; /* changed to black */
+            margin: 0;
+            padding: 0;
+        }
+    .container{
+        background-color: lightskyblue;
+        padding: 30px;
+    }
+    .product-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .add-button {
+        background-color: cyan;
+        color: #000;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .quantity-wrapper {
+        display: none;
+        align-items: center;
+        margin-left: 10px;
+    }
+
+    .quantity-button {
+        background-color: cyan;
+        color: #000;
+        border: none;
+        padding: 5px 8px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .quantity-input {
+        width: 40px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 0 5px;
+    }
+    </style>   
 </head>
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light " >
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cart">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
 
-<div class="container mt-5">
-    <h1 class="mb-4">Product List</h1>
-
-    <div class="row">
-        {% for product in products %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">{{ product.description }}</p>
-                        <p class="card-text">Price: ${{ product.price }}</p>
-                        <p class="card-text">Stock Quantity: {{ product.stock_quantity }}</p>
-                    </div>
-                </div>
+    <!-- Product Details -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="https://via.placeholder.com/400" alt="Placeholder Image" class="img-fluid">
             </div>
-        {% endfor %}
+            <div class="col-md-6" style="margin-top: 10px;">
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.description }}</p>
+                <p><strong>Price:</strong> ${{ product.price }}</p>
+                <p><strong>Discount:</strong> {{ product.discount }}%</p>
+                <p><strong>Categories:</strong>
+                {% for category in product.categories.all %}
+                    {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+                <div class="product-actions">
+                    <button class="add-button">Add to Cart</button>
+                    <div class="quantity-wrapper">
+                        <button class="quantity-button decrement">-</button>
+                        <input type="text" class="quantity-input" value="1">
+                        <button class="quantity-button increment">+</button>
+                    </div>
+            </div>
     </div>
-</div>
 
-<!-- Add Bootstrap JS and Popper.js CDN links (required for some Bootstrap components) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-KJ3o2Yr8/Jaz/czHgH/C9eN08FEbQ8j3rTIO48tFz1lf3g9LoOaP8bh00EXFfmW" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-fzQr1lXB1u8U8e4DS4eJIVJ5W4k9Aq3K1ozbf3LZv4zm
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+</body>
+<script>
+    const addButtons = document.querySelectorAll('.add-button');
+    const quantityWrappers = document.querySelectorAll('.quantity-wrapper');
+    
+    for (let i = 0; i < addButtons.length; i++) {
+        addButtons[i].addEventListener('click', () => {
+            addButtons[i].style.display = 'none';
+            quantityWrappers[i].style.display = 'flex';
+        });
+    }
+    
+    const incrementButtons = document.querySelectorAll('.increment');
+    const decrementButtons = document.querySelectorAll('.decrement');
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    
+    for (let i = 0; i < incrementButtons.length; i++) {
+        incrementButtons[i].addEventListener('click', () => {
+            quantityInputs[i].value = parseInt(quantityInputs[i].value) + 1;
+        });
+    
+        decrementButtons[i].addEventListener('click', () => {
+            const currentValue = parseInt(quantityInputs[i].value);
+    
+            if (currentValue > 1) {
+                quantityInputs[i].value = currentValue - 1;
+            } else {
+                addButtons[i].style.display = 'block';
+                quantityWrappers[i].style.display = 'none';
+            }
+        });
+    }
+    
+        </script>
+</html>
