@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1bPj/Z3L1oJ4aI9nLEHjpUnhsOuSf9oq70nNmj+oCMsZ6d4zjpPG2OvrXX3Z3ddcJrFZ+tMYhsX2X8ZHm+/z5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
-            background-color: #f0f8ff; /* changed to light cyan */
+            background-color: lightcyan; /* changed to light cyan */
             color: #000; /* changed to black */
             margin: 0;
             padding: 0;
@@ -136,7 +136,58 @@
         .fab.fa-whatsapp { color: green; }
         .fab.fa-telegram { color: #0088cc; }
         .fab.fa-instagram { color: #833ab4; }
-        
+        /* Animation for glow effect */
+@keyframes glow {
+  0% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.5);
+  }
+  100% {
+    opacity: 0.5;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+  }
+}
+
+/* Animation for wave effect */
+@keyframes wave {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1.2);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* Apply the animations to the placeholders */
+.placeholder-glow .placeholder {
+  animation: glow 2s infinite alternate;
+}
+
+.placeholder-wave .placeholder {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.placeholder-wave .placeholder:before {
+  content: attr(data-content);
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  animation: wave 1s infinite;
+}
+
     </style>
 </head>
 <body>
@@ -217,8 +268,11 @@
         </div>
     </section>
     <section id="categories" class="container mt-4">
-        <div class="category">
-            <h2>Category 1</h2>
+        <div class="category" >
+<!-- Placeholder for glowing effect -->
+<h3 class="placeholder-glow">
+    <span class="placeholder col-12">Category 1</span>
+</h3>
             <div class="product-row">
                 <div class="product-box">
                     <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
@@ -266,7 +320,9 @@
         </div>
     
         <div class="category">
-            <h2>Category 2</h2>
+            <h3 class="placeholder-glow">
+                <span class="placeholder col-12">Category 2</span>
+            </h3>
             <div class="product-row">
                 <div class="product-box">
                     <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
