@@ -1,5 +1,21 @@
 from django.db import models
 
+# class TimeStampedModel(models.Model):
+#     created_at = models.CharField(max_length=20, editable=False)
+#     updated_at = models.CharField(max_length=20, editable=False)
+
+#     class Meta:
+#         abstract = True
+
+#     def save(self, *args, **kwargs):
+#         # Update the 'updated_at' timestamp before saving
+#         self.updated_at = str(jdatetime_datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+
+#         if not self.created_at:
+#             self.created_at = str(jdatetime_datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
+
+#         super(TimeStampedModel, self).save(*args, **kwargs)
+
 class Order(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
