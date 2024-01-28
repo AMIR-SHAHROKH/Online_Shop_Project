@@ -7,7 +7,7 @@ def upload_to(instance, filename):
     return 'https://via.placeholder.com/300'
 class Category(models.Model):
     name = models.CharField(max_length=255)
-
+    subcategory = models.CharField(max_length=255)
 class Product(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='upload_to()',blank=True, null=True)
