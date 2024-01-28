@@ -9,17 +9,31 @@
     <style>
         .gradient-custom {
             /* fallback for old browsers */
-            background: #6a11cb;
+            background: lightcyan;
             
             /* Chrome 10-25, Safari 5.1-6 */
-            background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+            background:lightcyan;
             
             /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-            background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+            background: lightcyan;
             }   
     </style>
 </head>
 <body>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
+                <li class="nav-item active"><a class="nav-link" href="#cart">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
     <section class="h-100 gradient-custom">
         <div class="container py-5">
           <div class="row d-flex justify-content-center my-4">
@@ -64,17 +78,16 @@
                       <div class="d-flex mb-4" style="max-width: 300px">
                         <button class="btn btn-primary px-3 me-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                          <i class="fas fa-minus"></i>
+                          <i class="fas fa-minus">-</i>
                         </button>
       
                         <div class="form-outline">
-                          <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control" />
-                          <label class="form-label" for="form1">Quantity</label>
+                          <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control text-center" readonly />
                         </div>
       
                         <button class="btn btn-primary px-3 ms-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                          <i class="fas fa-plus"></i>
+                          <i class="fas fa-plus">+</i>
                         </button>
                       </div>
                       <!-- Quantity -->
@@ -126,17 +139,16 @@
                       <div class="d-flex mb-4" style="max-width: 300px">
                         <button class="btn btn-primary px-3 me-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                          <i class="fas fa-minus"></i>
+                          <i class="fas fa-minus">-</i>
                         </button>
       
                         <div class="form-outline">
-                          <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control" />
-                          <label class="form-label" for="form1">Quantity</label>
+                          <input id="form1" min="0" name="quantity" value="1" type="number" class="form-control text-center" readonly />
                         </div>
       
                         <button class="btn btn-primary px-3 ms-2"
                           onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                          <i class="fas fa-plus"></i>
+                          <i class="fas fa-plus">+</i>
                         </button>
                       </div>
                       <!-- Quantity -->
@@ -218,3 +230,21 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    // Monitor changes in the quantity input field
+    $('input[name="quantity"]').on('change', function() {
+      // Get the current value of the quantity input
+      var quantity = parseInt($(this).val());
+
+      // Check if the quantity is zero or less
+      if (quantity <= 0) {
+        // Remove the closest parent with class 'card' if quantity is zero
+        $(this).closest('.card').remove();
+      }
+    });
+  });
+</script>
+
