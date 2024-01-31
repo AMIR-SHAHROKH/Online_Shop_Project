@@ -66,38 +66,33 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="#account">Account</a></li>
                 <li class="nav-item"><a class="nav-link" href="#cart">Cart</a></li>
             </ul>
         </div>
     </nav>
-
-    <!-- Product Details -->
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <img src="https://via.placeholder.com/400" alt="Placeholder Image" class="img-fluid">
-            </div>
-            <div class="col-md-6" style="margin-top: 10px;">
+    <body>
+        <!-- Render Product List -->
+        <h1>Product List</h1>
+        <ul>
+            {% for product in products %}
+            <li>
                 <h2>{{ product.name }}</h2>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
                 <p>{{ product.description }}</p>
                 <p><strong>Price:</strong> ${{ product.price }}</p>
+                {% if product.discount %}
                 <p><strong>Discount:</strong> {{ product.discount }}%</p>
+                {% endif %}
                 <p><strong>Categories:</strong>
-                {% for category in product.categories.all %}
+                    {% for category in product.categories.all %}
                     {{ category.name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+                    {% endfor %}
                 </p>
-                <div class="product-actions">
-                    <button class="add-button">Add to Cart</button>
-                    <div class="quantity-wrapper">
-                        <button class="quantity-button decrement">-</button>
-                        <input type="text" class="quantity-input" value="1">
-                        <button class="quantity-button increment">+</button>
-                    </div>
-            </div>
-    </div>
-
+            </li>
+            {% endfor %}
+        </ul>
+    
     <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
