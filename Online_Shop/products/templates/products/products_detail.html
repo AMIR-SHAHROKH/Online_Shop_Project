@@ -71,14 +71,16 @@
             </ul>
         </div>
     </nav>
-    <body>
-        <!-- Render Product List -->
-        <h1>Product List</h1>
-        <ul>
+
+    <!-- Product Details -->
+    <div class="container mt-5" style="margin-bottom: 3rem;">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="products/IMG-20191218-083432_600x600.webp" alt="Placeholder Image" class="img-fluid">
+            </div>
             {% for product in products %}
-            <li>
+            <div class="col-md-6" style="margin-top: 10px;">
                 <h2>{{ product.name }}</h2>
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
                 <p>{{ product.description }}</p>
                 <p><strong>Price:</strong> ${{ product.price }}</p>
                 {% if product.discount %}
@@ -89,10 +91,17 @@
                     {{ category.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
-            </li>
+                <div class="product-actions">
+                    <button class="add-button">Add to Cart</button>
+                    <div class="quantity-wrapper">
+                        <button class="quantity-button decrement">-</button>
+                        <input type="text" class="quantity-input" value="1">
+                        <button class="quantity-button increment">+</button>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
-        </ul>
-    
+            
     <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
