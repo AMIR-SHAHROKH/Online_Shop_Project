@@ -9,6 +9,16 @@ class User(models.Model):
     edited_at = models.DateTimeField(auto_now_add=True)
     # address = models.CharField()
     role = models.BooleanField(default=False)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    address = models.TextField()
+
+    def __str__(self):
+        return self.user.username
+
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
     street = models.CharField(max_length=255)
