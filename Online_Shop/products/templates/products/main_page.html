@@ -63,8 +63,8 @@
         }
     
         .add-button {
-            background-color: cyan;
-            color: #000;
+            background-color: blue;
+            color: white;
             border: none;
             padding: 8px 12px;
             border-radius: 5px;
@@ -78,10 +78,10 @@
         }
     
         .quantity-button {
-            background-color: cyan;
-            color: #000;
+            background-color: blue;
+            color: white;
             border: none;
-            padding: 5px 8px;
+            padding: 5px 5px;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -137,56 +137,56 @@
         .fab.fa-telegram { color: #0088cc; }
         .fab.fa-instagram { color: #833ab4; }
         /* Animation for glow effect */
-@keyframes glow {
-  0% {
-    opacity: 0.5;
-    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.5);
-  }
-  100% {
-    opacity: 0.5;
-    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
-  }
-}
+        @keyframes glow {
+        0% {
+            opacity: 0.5;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+        }
+        50% {
+            opacity: 1;
+            box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.5);
+        }
+        100% {
+            opacity: 0.5;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+        }
+        }
 
-/* Animation for wave effect */
-@keyframes wave {
-  0% {
-    transform: scaleX(1);
-  }
-  50% {
-    transform: scaleX(1.2);
-  }
-  100% {
-    transform: scaleX(1);
-  }
-}
+        /* Animation for wave effect */
+        @keyframes wave {
+        0% {
+            transform: scaleX(1);
+        }
+        50% {
+            transform: scaleX(1.2);
+        }
+        100% {
+            transform: scaleX(1);
+        }
+        }
 
-/* Apply the animations to the placeholders */
-.placeholder-glow .placeholder {
-  animation: glow 2s infinite alternate;
-}
+        /* Apply the animations to the placeholders */
+        .placeholder-glow .placeholder {
+        animation: glow 2s infinite alternate;
+        }
 
-.placeholder-wave .placeholder {
-  display: inline-block;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-}
+        .placeholder-wave .placeholder {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        }
 
-.placeholder-wave .placeholder:before {
-  content: attr(data-content);
-  overflow: hidden;
-  white-space: nowrap;
-  position: absolute;
-  width: 100%;
-  left: 0;
-  top: 0;
-  animation: wave 1s infinite;
-}
+        .placeholder-wave .placeholder:before {
+        content: attr(data-content);
+        overflow: hidden;
+        white-space: nowrap;
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 0;
+        animation: wave 1s infinite;
+        }
 
     </style>
 </head>
@@ -369,8 +369,6 @@
 
             </div>
         </div>
-
-        <!-- Add more categories and product boxes as needed -->
     </section>        
     <footer>
         <div class="footer-content" style="justify-content: space-between;">
