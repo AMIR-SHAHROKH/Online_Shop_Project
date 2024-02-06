@@ -18,3 +18,10 @@ class UserProfileForm(forms.ModelForm):
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+
+class EmailForm(forms.Form):
+    email = forms.EmailField(label='Email', max_length=100)
+    
+class OTPForm(forms.Form):
+    otp = forms.CharField(label='OTP', max_length=6)
+    email = forms.EmailField(widget=forms.HiddenInput())
