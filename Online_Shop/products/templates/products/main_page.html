@@ -222,11 +222,13 @@
     <section id="featured-products" class="container mt-4">
         <div class="product-row">
             <div class="product-box">
-                <img src="https://via.placeholder.com/400x400.png?text=Picture+1" alt="Product 1" class="product-image">
-                <h3 class="product-name">Product 1</h3>
-                <p class="product-price">$10.99</p>
-                <p class="product-description">Product 1 Description</p>
+                <a onclick="location.href='{% url 'products:product_detail' %}'">
+                    <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
+                    <h3 class="product-name">Product 1</h3>
+                    <p class="product-price">$10.99</p>
+                    <p class="product-description">Product 1 Description</p>
                 <div class="product-actions">
+                </a>
                     <button class="add-button">Add to Cart</button>
                     <div class="quantity-wrapper">
                         <button class="quantity-button decrement">-</button>
@@ -235,13 +237,16 @@
                     </div>
                 </div>
             </div>
+            
 
             <div class="product-box">
+                <a onclick="location.href='{% url 'products:product_detail' %}'">
                 <img src="https://via.placeholder.com/400x400.png?text=Picture+2" alt="Product 2" class="product-image">
                 <h3 class="product-name">Product 2</h3>
                 <p class="product-price">$15.99</p>
                 <p class="product-description">Product 2 Description</p>
                 <div class="product-actions">
+                </a>
                     <button class="add-button">Add to Cart</button>
                     <div class="quantity-wrapper">
                         <button class="quantity-button decrement">-</button>
