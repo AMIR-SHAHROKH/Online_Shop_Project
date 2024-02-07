@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views import View
 import random
 import string
-from .forms import EmailForm, OTPForm
+from .forms import EmailForm, OTPForm , AddressForm
 from django.views.generic import TemplateView
 
 class AccountView(TemplateView):
@@ -53,24 +53,24 @@ class LogoutView(View):
 class SignUpView(View):
     def get(self, request):
         user_form = UserForm()
-        profile_form = UserProfileForm()
-        return render(request, 'users/signup.html', {'user_form': user_form, 'profile_form': profile_form})
+        address_form = AddressForm()
+        return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
 
     def post(self, request):
         user_form = UserForm(request.POST)
-        profile_form = UserProfileForm(request.POST)
-        if user_form.is_valid() and profile_form.is_valid():
+        address_form = AddressForm(request.POST)
+        if user_form.is_valid() and address_form.is_valid():
             user = user_form.save(commit=False)
             user.set_password(user.password)
             user.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
+            address = address_form.save(commit=False)
+            address.user = user
+            address.save()
             auth_login(request, user)
-            return redirect('home')  # Redirect to the home page after successful signup
+            return redirect('core/')  # Redirect to the home page after successful signup
         else:
-            return render(request, 'users/signup.html', {'user_form': user_form, 'profile_form': profile_form})
-
+            return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
+        
 class LoginWithEmailOTPView(View):
     def get(self, request):
         email_form = EmailForm()
