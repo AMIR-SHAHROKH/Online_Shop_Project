@@ -5,14 +5,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from .forms import UserForm, UserProfileForm
+from .forms import UserForm
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from django.views import View
 import random
 import string
-from .forms import EmailForm, OTPForm , AddressForm
+from .forms import EmailForm, OTPForm , AddressForm , CustomAuthenticationForm
 from django.views.generic import TemplateView
 
 class AccountView(TemplateView):
@@ -32,18 +32,20 @@ class ShoppingCartView(View):
 # template_name = 'users/shopping_cart.html'
 class LoginView(View):
     def get(self, request):
-        return render(request, 'users/login.html')
+        form = CustomAuthenticationForm()
+        return render(request, 'users/login.html', {'form': form})
 
     def post(self, request):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            auth_login(request, user)
-            return redirect('home')  # Redirect to the home page after successful login
-        else:
-            # Return an error message or handle invalid login credentials
-            return render(request, 'users/login.html', {'error_message': 'Invalid username or password'})
+        form = CustomAuthenticationForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')  # Redirect to the home page after successful login
+        # If authentication fails or form is invalid, re-render the login form with an error message
+        return render(request, 'users/login.html', {'form': form, 'error_message': 'Invalid username or password'})
 
 class LogoutView(View):
     def get(self, request):
