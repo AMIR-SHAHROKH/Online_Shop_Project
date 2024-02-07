@@ -17,7 +17,7 @@
   
       .form {
         background-color: white;
-        padding: 20px;
+        padding: 30px;
         border-radius: 5px;
       }
   
@@ -34,7 +34,7 @@
         border: none;
         border-radius: 5px;
         padding: 15px;
-        font-size: 18px;
+        font-size: 20px;
       }
       
       .btn-primary{
@@ -60,9 +60,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#account">Account</a></li>
-                <li class="nav-item active"><a class="nav-link" href="#cart">Cart</a></li>
+              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
@@ -79,6 +79,9 @@
             <input type="submit" id="otp-submit-button" class="btn-primary" value="Submit OTP" disabled>
             <input type="submit" id="resend-otp-button" class="btn-primary" value="Resend OTP" disabled>
             <input type="submit" id="submit-button" class="btn-primary" value="Submit" disabled>
+            <div class="signup-link">
+              <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
+          </div>
         </div>
   </div>
 

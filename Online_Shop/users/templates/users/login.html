@@ -81,9 +81,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#account">Account</a></li>
-                <li class="nav-item"><a class="nav-link" href="#cart">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
@@ -100,7 +100,7 @@
             <button type="submit">Login</button>
         </form>
         <div class="signup-link">
-            <p>If you don't have an account, <a href="#">Sign Up</a></p>
+            <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
         </div>
     </div>
 </body>
