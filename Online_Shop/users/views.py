@@ -13,9 +13,26 @@ from django.views import View
 import random
 import string
 from .forms import EmailForm, OTPForm
+from django.views.generic import TemplateView
+
+class AccountView(TemplateView):
+    template_name = 'users/account.html'
+class ShoppingCartView(View):
+    def get(self, request):
+        return render(request, 'users/cart.html')
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+        # Your logic to fetch shopping cart items and process data
+        # For example, fetching items from the shopping cart model
+        # Replace 'ShoppingCartItem' with your actual model name
+        # cart_items = ShoppingCartItem.objects.all()
+    #     cart_items = []  # Placeholder for cart items
+    #     context['cart_items'] = cart_items
+    #     return context    
+# template_name = 'users/shopping_cart.html'
 class LoginView(View):
     def get(self, request):
-        return render(request, 'accounts/login.html')
+        return render(request, 'users/login.html')
 
     def post(self, request):
         username = request.POST.get('username')
@@ -26,7 +43,7 @@ class LoginView(View):
             return redirect('home')  # Redirect to the home page after successful login
         else:
             # Return an error message or handle invalid login credentials
-            return render(request, 'accounts/login.html', {'error_message': 'Invalid username or password'})
+            return render(request, 'users/login.html', {'error_message': 'Invalid username or password'})
 
 class LogoutView(View):
     def get(self, request):
@@ -37,7 +54,7 @@ class SignUpView(View):
     def get(self, request):
         user_form = UserForm()
         profile_form = UserProfileForm()
-        return render(request, 'accounts/signup.html', {'user_form': user_form, 'profile_form': profile_form})
+        return render(request, 'users/signup.html', {'user_form': user_form, 'profile_form': profile_form})
 
     def post(self, request):
         user_form = UserForm(request.POST)
@@ -52,13 +69,13 @@ class SignUpView(View):
             auth_login(request, user)
             return redirect('home')  # Redirect to the home page after successful signup
         else:
-            return render(request, 'accounts/signup.html', {'user_form': user_form, 'profile_form': profile_form})
+            return render(request, 'users/signup.html', {'user_form': user_form, 'profile_form': profile_form})
 
 class LoginWithEmailOTPView(View):
     def get(self, request):
         email_form = EmailForm()
         otp_form = OTPForm()
-        return render(request, 'login_with_email_otp.html', {'email_form': email_form, 'otp_form': otp_form})
+        return render(request, 'users/login_with_email_otp.html', {'email_form': email_form, 'otp_form': otp_form})
 
     def post(self, request):
         if 'email_form' in request.POST:  # Check if email form is submitted
