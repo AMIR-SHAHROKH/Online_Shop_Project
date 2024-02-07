@@ -90,17 +90,25 @@
 
     <div class="container">
         <h2>Login</h2>
-        <form>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Render Username Field -->
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+            
+            <!-- Render Password Field -->
+            <label for="id_password">Password:</label>
+            {{ form.password }}
+        
             <button type="submit">Login</button>
         </form>
         <div class="signup-link">
+            <p>   </p>
+        </div>
+        <div class="signup-link">
             <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
+            <p>Or login another way, <a onclick="location.href='{% url 'users:log in with otp' %}'" style="color: blue;">OTP login</a></p>
         </div>
     </div>
 </body>

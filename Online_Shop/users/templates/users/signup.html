@@ -125,8 +125,8 @@
             <button type="submit">Sign Up</button>
         </form>
         <div class="signup-link">
-            <p>If you already have an account, <a href="#" style="color: blue;">Login</a> or
-                <a href="#" style="color: blue;">OTP Login</a></p>
+            <p>If you already have an account, <a onclick="location.href='{% url 'users:login' %}'" style="color: blue;">Login</a> or
+            <a onclick="location.href='{% url 'users:log in with otp' %}'" style="color: blue;">OTP Login</p>
         </div>
     </div>
 </body>
