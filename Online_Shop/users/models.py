@@ -7,7 +7,7 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now_add=True)
-    # address = models.CharField()
+    # address = models.CharField() 
     role = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
