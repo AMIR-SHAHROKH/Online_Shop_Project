@@ -35,6 +35,7 @@
         border-radius: 5px;
         padding: 15px;
         font-size: 20px;
+        margin-top: 5px;
       }
       
       .btn-primary{
@@ -79,9 +80,13 @@
             <input type="submit" id="otp-submit-button" class="btn-primary" value="Submit OTP" disabled>
             <input type="submit" id="resend-otp-button" class="btn-primary" value="Resend OTP" disabled>
             <input type="submit" id="submit-button" class="btn-primary" value="Submit" disabled>
-            <div class="signup-link">
-              <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
+            <div class="signup-link" style="margin-top: 5px;">
+              <p>    </p>
           </div>
+          <div class="signup-link">
+            <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
+            <p>Or login another way, <a onclick="location.href='{% url 'users:login' %}'" style="color: blue;">login</a></p>
+        </div>
         </div>
   </div>
 
