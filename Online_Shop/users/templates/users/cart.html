@@ -55,9 +55,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
-                <li class="nav-item active"><a class="nav-link" href="#cart">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" oneclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
