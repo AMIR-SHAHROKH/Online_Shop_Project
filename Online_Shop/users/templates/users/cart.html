@@ -7,15 +7,21 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container {
+        body {
+            background-color: lightcyan;
+        }
+        .container { 
+            background-color: lightgray;
             padding-top: 20px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
         }
         .items-list{
             display: flex;
-            flex-direction: column;
-            width: max-content;
+            flex-direction: row;
+            width: max-content;   
+            gap: 20px;
         }
         .item {
             width: inherit; /* Adjust width */
@@ -25,6 +31,7 @@
             display: flex;
             flex-direction: row;
             align-items: flex-start;
+            background-color: aliceblue;
         }
         .item img {
             max-width: 100px;
@@ -33,7 +40,7 @@
         .item-content {
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly;
+            justify-content: space-between;
             align-items: flex-end;
         }
         .remove-item {
@@ -67,7 +74,7 @@
         <h2>Shopping Cart</h2>
         <div class="items-list">
             <!-- Item 1 -->
-            <div class="item" style="margin: 2px;">
+            <div class="item" >
                 <img src="https://via.placeholder.com/150" alt="Product Image" class="img-thumbnail">
                 <h3>Product Name 1</h3>
                 <div class="item-content">
@@ -90,7 +97,6 @@
                     <button class="btn btn-danger remove-item">Remove</button>
                 </div>
             </div>
-            <!-- Add more items here -->
         </div>
 
         <!-- Total Amount Box -->
