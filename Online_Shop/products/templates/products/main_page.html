@@ -273,26 +273,38 @@
         </div>
     </section>
     <section id="categories" class="container mt-4">
-        <div class="category" >
-<!-- Placeholder for glowing effect -->
-<h3 class="placeholder-glow">
-    <span class="placeholder col-12">Category 1</span>
-</h3>
-            <div class="product-row">
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
-                    <h3 class="product-name">Product 1</h3>
-                    <p class="product-price">$10.99</p>
-                    <p class="product-description">Product 1 Description</p>
-                    <div class="product-actions">
-                        <button class="add-button">Add to Cart</button>
-                        <div class="quantity-wrapper">
-                            <button class="quantity-button decrement">-</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-button increment">+</button>
+        {% for category in categories %}
+            <div class="category">
+                <h3 class="placeholder-glow">
+                    <span class="placeholder col-12">{{ category.name }}</span>
+                </h3>
+                {% load static %}
+
+                {% for product in category.products.all %}
+                    <div class="product-box">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                            <img src="{% static 'images/default_product_image.jpg' %}" alt="Default Image" class="product-image">
+                        {% endif %}
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-price">${{ product.price }}</p>
+                        <p class="product-description">{{ product.description }}</p>
+                        <div class="product-actions">
+                            <button class="add-button">Add to Cart</button>
+                            <div class="quantity-wrapper">
+                                <button class="quantity-button decrement">-</button>
+                                <input type="text" class="quantity-input" value="1">
+                                <button class="quantity-button increment">+</button>
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+                
                 </div>
+            </div>
+        {% endfor %}
+    </section>
                 <div class="product-box">
                     <img src="https://via.placeholder.com/400x400.png?text=Product+2" alt="Product 2" class="product-image">
                     <h3 class="product-name">Product 2</h3>
