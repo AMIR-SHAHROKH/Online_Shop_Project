@@ -16,8 +16,8 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='products/images/', blank=True, null=True)
     description = models.TextField()
-    discount = models.DecimalField(max_digits=10, decimal_places=1, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount = models.DecimalField(max_digits=10, decimal_places=1, blank=True ,null=True)
+    price = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name='products')
 
 class Review(models.Model):
