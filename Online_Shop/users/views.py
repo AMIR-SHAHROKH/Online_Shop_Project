@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views import View
 import random
 import string
-from .forms import EmailForm, OTPForm , AddressForm , CustomAuthenticationForm
+from .forms import EmailForm, OTPForm , AddressForm , CustomLoginForm
 from django.views.generic import TemplateView
 
 class AccountView(TemplateView):
@@ -32,18 +32,18 @@ class ShoppingCartView(View):
 # template_name = 'users/shopping_cart.html'
 class LoginView(View):
     def get(self, request):
-        form = CustomAuthenticationForm()
+        form = CustomLoginForm()
         return render(request, 'users/login.html', {'form': form})
 
     def post(self, request):
-        form = CustomAuthenticationForm(request.POST)
+        form = CustomLoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Redirect to the home page after successful login
+                return redirect('main_page')  # Redirect to the home page after successful login
         # If authentication fails or form is invalid, re-render the login form with an error message
         return render(request, 'users/login.html', {'form': form, 'error_message': 'Invalid username or password'})
 
