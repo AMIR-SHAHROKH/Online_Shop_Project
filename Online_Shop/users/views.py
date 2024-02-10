@@ -75,43 +75,41 @@ class SignUpView(View):
         
 class LoginWithEmailOTPView(View):
     def get(self, request):
-        email_form = EmailForm()
-        otp_form = OTPForm()
-        return render(request, 'users/login_with_email_otp.html', {'email_form': email_form, 'otp_form': otp_form})
+        return render(request, 'users/login_with_email_otp.html')
 
     def post(self, request):
-        if 'email_form' in request.POST:  # Check if email form is submitted
-            email_form = EmailForm(request.POST)
-            if email_form.is_valid():
-                email = email_form.cleaned_data['email']
-                try:
-                    user = User.objects.get(email=email)
-                    otp = self.generate_otp()
-                    user.profile.otp = otp
-                    user.profile.otp_created_at = timezone.now()
-                    user.profile.save()
-                    self.send_otp_email(email, otp)
-                    return redirect('otp_verification')
-                except User.DoesNotExist:
-                    error = 'No user with this email address found.'
-                    return render(request, 'login_with_email_otp.html', {'email_form': email_form, 'otp_form': OTPForm(), 'error': error})
-        elif 'otp_form' in request.POST:  # Check if OTP form is submitted
-            otp_form = OTPForm(request.POST)
-            if otp_form.is_valid():
-                email = otp_form.cleaned_data['email']
-                otp = otp_form.cleaned_data['otp']
-                try:
-                    user = User.objects.get(email=email)
-                    if user.profile.otp == otp and user.profile.otp_created_at > timezone.now() - timezone.timedelta(minutes=5):
-                        login(request, user)
-                        return redirect('home')
-                    else:
-                        error = 'Invalid OTP or OTP expired.'
-                        return render(request, 'login_with_email_otp.html', {'email_form': EmailForm(), 'otp_form': otp_form, 'error': error})
-                except User.DoesNotExist:
-                    error = 'No user with this email address found.'
-                    return render(request, 'login_with_email_otp.html', {'email_form': EmailForm(), 'otp_form': otp_form, 'error': error})
-        return render(request, 'login_with_email_otp.html', {'email_form': EmailForm(), 'otp_form': OTPForm()})  # Default rendering
+        if 'email' in request.POST:  # Check if email form is submitted
+            email = request.POST.get('email')
+            try:
+                user = User.objects.get(email=email)
+                otp = self.generate_otp()
+                user.otp = otp
+                user.otp_created_at = timezone.now()
+                user.save()
+                self.send_otp_email(email, otp)
+                request.session['email'] = email  # Store email in session
+                return render(request, 'users/login_with_email_otp.html', message = "we sent you the email")
+            except User.DoesNotExist:
+                error = 'No user with this email address found.'
+                return render(request, 'users/login_with_email_otp.html', {'error': error})
+        elif 'otp' in request.POST:  # Check if OTP form is submitted
+            email = request.session.get('email')
+            otp = request.POST.get('otp')
+            try:
+                user = User.objects.get(email=email)
+                if user.otp == otp and user.otp_created_at > timezone.now() - timezone.timedelta(minutes=5):
+                    # OTP verification successful, proceed with login
+                    del request.session['email']  # Remove email from session
+                    # Add your login logic here, for example:
+                    # login(request, user)
+                    return redirect('home')  # Redirect to home page after login
+                else:
+                    error = 'Invalid OTP or OTP expired.'
+                    return render(request, 'users/login_with_email_otp.html', {'error': error})
+            except User.DoesNotExist:
+                error = 'No user with this email address found.'
+                return render(request, 'users/login_with_email_otp.html', {'error': error})
+        return render(request, 'users/login_with_email_otp.html')  # Default rendering
 
     def generate_otp(self, length=6):
         characters = string.digits
