@@ -20,7 +20,7 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['name', 'address']
 
-class CustomAuthenticationForm(AuthenticationForm):
+class CustomLoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
 
