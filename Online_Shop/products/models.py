@@ -19,6 +19,7 @@ class Product(models.Model):
     discount = models.DecimalField(max_digits=10, decimal_places=1, blank=True ,null=True)
     price = models.IntegerField()
     categories = models.ManyToManyField(Category, related_name='products')
+    slug = models.SlugField()
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
