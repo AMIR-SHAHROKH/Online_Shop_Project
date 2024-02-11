@@ -218,70 +218,18 @@
             <!-- Add more carousel items as needed -->
         </div>
     </div>
+    {% comment %} {%for product in products%} {% endcomment %}
+<section id="categories" class="container mt-4">
+    {% for category in categories %}
+        <div class="category">
+            <h3 class="placeholder-glow">
+                <span class="placeholder col-12">{{ category.name }}</span>
+            </h3>
+            {% load static %}
 
-    <section id="featured-products" class="container mt-4">
-        <div class="product-row">
-            <div class="product-box">
-                <a onclick="location.href='{% url 'products:product_detail' %}'">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
-                    <h3 class="product-name">Product 1</h3>
-                    <p class="product-price">$10.99</p>
-                    <p class="product-description">Product 1 Description</p>
-                <div class="product-actions">
-                </a>
-                    <button class="add-button">Add to Cart</button>
-                    <div class="quantity-wrapper">
-                        <button class="quantity-button decrement">-</button>
-                        <input type="text" class="quantity-input" value="1">
-                        <button class="quantity-button increment">+</button>
-                    </div>
-                </div>
-            </div>
-            
-
-            <div class="product-box">
-                <a onclick="location.href='{% url 'products:product_detail' %}'">
-                <img src="https://via.placeholder.com/400x400.png?text=Picture+2" alt="Product 2" class="product-image">
-                <h3 class="product-name">Product 2</h3>
-                <p class="product-price">$15.99</p>
-                <p class="product-description">Product 2 Description</p>
-                <div class="product-actions">
-                </a>
-                    <button class="add-button">Add to Cart</button>
-                    <div class="quantity-wrapper">
-                        <button class="quantity-button decrement">-</button>
-                        <input type="text" class="quantity-input" value="1">
-                        <button class="quantity-button increment">+</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-box">
-                <img src="https://via.placeholder.com/400x400.png?text=Picture+3" alt="Product 3" class="product-image">
-                <h3 class="product-name">Product 3</h3>
-                <p class="product-price">$12.99</p>
-                <p class="product-description">Product 3 Description</p>
-                <div class="product-actions">
-                    <button class="add-button">Add to Cart</button>
-                    <div class="quantity-wrapper">
-                        <button class="quantity-button decrement">-</button>
-                        <input type="text" class="quantity-input" value="1">
-                        <button class="quantity-button increment">+</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="categories" class="container mt-4">
-        {% for category in categories %}
-            <div class="category">
-                <h3 class="placeholder-glow">
-                    <span class="placeholder col-12">{{ category.name }}</span>
-                </h3>
-                {% load static %}
-
-                {% for product in category.products.all %}
-                    <div class="product-box">
+            {% for product in category.products.all %}
+                <div class="product-box">
+                    <a onclick="location.href='{% url 'products:product_detail' product.slug %}'">
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                         {% else %}
@@ -290,26 +238,7 @@
                         <h3 class="product-name">{{ product.name }}</h3>
                         <p class="product-price">${{ product.price }}</p>
                         <p class="product-description">{{ product.description }}</p>
-                        <div class="product-actions">
-                            <button class="add-button">Add to Cart</button>
-                            <div class="quantity-wrapper">
-                                <button class="quantity-button decrement">-</button>
-                                <input type="text" class="quantity-input" value="1">
-                                <button class="quantity-button increment">+</button>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-                
-                </div>
-            </div>
-        {% endfor %}
-    </section>
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+2" alt="Product 2" class="product-image">
-                    <h3 class="product-name">Product 2</h3>
-                    <p class="product-price">$15.99</p>
-                    <p class="product-description">Product 2 Description</p>
+                    </a>
                     <div class="product-actions">
                         <button class="add-button">Add to Cart</button>
                         <div class="quantity-wrapper">
@@ -319,73 +248,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+3" alt="Product 3" class="product-image">
-                    <h3 class="product-name">Product 3</h3>
-                    <p class="product-price">$12.99</p>
-                    <p class="product-description">Product 3 Description</p>
-                    <div class="product-actions">
-                        <button class="add-button">Add to Cart</button>
-                        <div class="quantity-wrapper">
-                            <button class="quantity-button decrement">-</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-button increment">+</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
-    
-        <div class="category">
-            <h3 class="placeholder-glow">
-                <span class="placeholder col-12">Category 2</span>
-            </h3>
-            <div class="product-row">
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+1" alt="Product 1" class="product-image">
-                    <h3 class="product-name">Product 1</h3>
-                    <p class="product-price">$10.99</p>
-                    <p class="product-description">Product 1 Description</p>
-                    <div class="product-actions">
-                        <button class="add-button">Add to Cart</button>
-                        <div class="quantity-wrapper">
-                            <button class="quantity-button decrement">-</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-button increment">+</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+2" alt="Product 2" class="product-image">
-                    <h3 class="product-name">Product 2</h3>
-                    <p class="product-price">$15.99</p>
-                    <p class="product-description">Product 2 Description</p>
-                    <div class="product-actions">
-                        <button class="add-button">Add to Cart</button>
-                        <div class="quantity-wrapper">
-                            <button class="quantity-button decrement">-</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-button increment">+</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-box">
-                    <img src="https://via.placeholder.com/400x400.png?text=Product+3" alt="Product 3" class="product-image">
-                    <h3 class="product-name">Product 3</h3>
-                    <p class="product-price">$12.99</p>
-                    <p class="product-description">Product 3 Description</p>
-                    <div class="product-actions">
-                        <button class="add-button">Add to Cart</button>
-                        <div class="quantity-wrapper">
-                            <button class="quantity-button decrement">-</button>
-                            <input type="text" class="quantity-input" value="1">
-                            <button class="quantity-button increment">+</button>
-                        </div>
-                    </div>
-                </div>
+    {% endfor %}
+    {% comment %} {%endfor%} {% endcomment %}
+</section>
 
-            </div>
-        </div>
     </section>        
     <footer>
         <div class="footer-content" style="justify-content: space-between;">

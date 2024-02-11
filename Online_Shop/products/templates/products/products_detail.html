@@ -76,9 +76,8 @@
     <div class="container mt-5" style="margin-bottom: 3rem;">
         <div class="row">
             <div class="col-md-6">
-                <img src="https:/via.placeholder.com/450" alt="Placeholder Image" class="img-fluid">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
             </div>
-            {% for product in products %}
             <div class="col-md-6" style="margin-top: 10px;">
                 <h2>{{ product.name }}</h2>
                 <p>{{ product.description }}</p>
@@ -87,7 +86,7 @@
                 <p><strong>Discount:</strong> {{ product.discount }}%</p>
                 {% endif %}
                 <p><strong>Categories:</strong>
-                    {% for category in product.categories.all %}
+                    {% for category in categories %}
                     {{ category.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
@@ -100,7 +99,8 @@
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        </div>
+    </div>
             
     <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
