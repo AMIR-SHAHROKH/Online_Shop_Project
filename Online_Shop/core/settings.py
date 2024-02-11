@@ -30,6 +30,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mail.yahoo.com'  # Your SMTP server hostname
+EMAIL_PORT = 465  # Your SMTP server port (usually 25, 465, or 587)
+EMAIL_HOST_USER = 'amirshahrokh82@yahoo.com'  # Your email username
+EMAIL_HOST_PASSWORD = 'Amir82'  # Your email password
+EMAIL_USE_TLS = True  # Enable TLS encryption
 
 # Application definition
 
@@ -90,6 +96,7 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
