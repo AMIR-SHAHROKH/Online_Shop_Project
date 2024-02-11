@@ -1,58 +1,71 @@
+<!-- login_with_email_otp.html -->
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<style>
 
-    body {
-        background-color: lightcyan;
-      }
-  
-      .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 80vh;
-      }
-  
-      .form {
-        background-color: white;
-        padding: 30px;
-        border-radius: 5px;
-      }
-  
-      .input-field {
-        margin-bottom: 10px;
-        width: 100%;
-        padding: 5px;
-      }
-  
-      .input-field[type="submit"] {
-        background-color: blue;
-        color: black;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        padding: 15px;
-        font-size: 20px;
-        margin-top: 5px;
-      }
-      
-      .btn-primary{
-        color:black;
-      }
-  
-      .error-message {
-        color: red;
-      }
-  
-      .otp-message {
-        color: green;
-      }
-</style>
+<head>
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: lightcyan;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+        }
+
+        .container h2 {
+            text-align: center;
+        }
+
+        .container p {
+            margin-bottom: 10px;
+        }
+
+        .container input[type="email"],
+        .container input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: blue;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .signup-link a {
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
 </head>
-      <!-- Navbar -->
-    <!-- Navbar -->
+
+<body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Your Online Shop</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -61,112 +74,42 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
-              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
-              <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
 
     <div class="container">
-        <div class="form">
-            <h2>OTP Verification</h2>
+        <h2>OTP Verification</h2>
+        {% if error %}
+        <p class="error-message">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <!-- Email Form -->
             <p>Enter your email:</p>
-            <input type="email" id="email-field" class="input-field" required>
-            <input type="submit" id="email-submit-button" class="btn-primary" value="Submit">
-            <p class="error-message" id="error-message"></p>
+            <input type="email" id="email-field" class="input-field" name="email" required>
+            <input type="submit" class="btn-primary" value="Submit" name="email_form">
+        </form>
+
+        <!-- OTP Form -->
+        <form method="post">
+            {% csrf_token %}
             <p class="otp-message" id="otp-message"></p>
-            <input type="number" id="otp-field" class="input-field" required disabled>
-            <input type="submit" id="otp-submit-button" class="btn-primary" value="Submit OTP" disabled>
-            <input type="submit" id="resend-otp-button" class="btn-primary" value="Resend OTP" disabled>
-            <input type="submit" id="submit-button" class="btn-primary" value="Submit" disabled>
-            <div class="signup-link" style="margin-top: 5px;">
-              <p>    </p>
-          </div>
-          <div class="signup-link">
-            <p>If you don't have an account, <a onclick="location.href='{% url 'users:signup' %}'" style="color: blue;">Sign Up</a></p>
-            <p>Or login another way, <a onclick="location.href='{% url 'users:login' %}'" style="color: blue;">login</a></p>
+            <input type="number" id="otp-field" class="input-field" name="otp" required disabled>
+            <input type="submit" class="btn-primary" value="Submit OTP" name="otp_form" disabled>
+            <input type="submit" class="btn-primary" value="Resend OTP" name="resend_otp" disabled>
+            <input type="submit" class="btn-primary" value="Submit" disabled>
+        </form>
+
+        <!-- Sign Up and Login Links -->
+        <div class="signup-link">
+            <p>If you don't have an account, <a href="{% url 'users:signup' %}" style="color: blue;">Sign Up</a></p>
+            <p>Or login another way, <a href="{% url 'users:login' %}" style="color: blue;">Login</a></p>
         </div>
-        </div>
-  </div>
+    </div>
+</body>
 
-  
-<script>
-
-    var emailField = document.getElementById("email-field");
-    var emailSubmitButton = document.getElementById("email-submit-button");
-    var otpField = document.getElementById("otp-field");
-    var otpSubmitButton = document.getElementById("otp-submit-button");
-    var resendOtpButton = document.getElementById("resend-otp-button");
-    var submitButton = document.getElementById("submit-button");
-    var errorMessage = document.getElementById("error-message");
-    var otpMessage = document.getElementById("otp-message");
-
-    emailSubmitButton.addEventListener("click", function() {
-      var email = emailField.value;
-      
-      if (validateEmail(email)) {
-        errorMessage.innerHTML = "";
-        otpField.style.display = "block";
-        otpSubmitButton.style.display = "block";
-        resendOtpButton.style.display = "block";
-        otpField.disabled = false;
-        otpSubmitButton.disabled = false;
-        resendOtpButton.disabled = false;
-      } else {
-        errorMessage.innerHTML = "Invalid email. Please enter a valid email address.";
-        resetForm();
-      }
-    });
-
-    otpSubmitButton.addEventListener("click", function() {
-      var otp = otpField.value;
-      
-      if (validateOTP(otp)) {
-        otpMessage.innerHTML = "OTP successfully validated!";
-        submitButton.style.display = "block";
-        submitButton.disabled = false;
-      } else {
-        otpMessage.innerHTML = "Invalid OTP. Please enter a valid OTP.";
-        resetForm();
-      }
-    });
-
-    resendOtpButton.addEventListener("click", function() {
-      // Resend OTP logic here
-    });
-
-    submitButton.addEventListener("click", function() {
-      alert("Submitted successfully!");
-      resetForm();
-    });
-
-    function validateEmail(email) {
-      if (!email.includes("@") || !email.includes(".com")) {
-        return false;
-      }
-
-      return true;
-    }
-
-    function validateOTP(otp) {
-      // OTP validation logic here
-      return true;
-    }
-
-    function resetForm() {
-      otpField.value = "";
-      otpField.style.display = "none";
-      otpSubmitButton.style.display = "none";
-      resendOtpButton.style.display = "none";
-      submitButton.style.display = "none";
-      otpMessage.innerHTML = "";
-      otpField.disabled = true;
-      otpSubmitButton.disabled = true;
-      resendOtpButton.disabled = true;
-      submitButton.disabled = true;
-    }
-  
-</script>
-      
 </html>

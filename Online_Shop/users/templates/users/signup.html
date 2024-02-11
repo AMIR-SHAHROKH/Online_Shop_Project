@@ -72,6 +72,9 @@
             color: blue;
             text-decoration: underline;
         }
+        .error {
+            color : red;
+        }
     </style>
 </head>
 
@@ -95,32 +98,63 @@
     <div class="container">
         <h2>Sign Up</h2>
         <form method="post">
+            {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+        {% endif %}
             {% csrf_token %}
             <!-- User Form Fields -->
             <label for="username">Username:</label>
             {{ user_form.username }}
-
+            {% for error in user_form.username.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="email">Email:</label>
             {{ user_form.email }}
-
+            {% for error in user_form.email.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="password">Password:</label>
             {{ user_form.password }}
-
+            {% for error in user_form.password.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <!-- Address Form Fields -->
             <label for="street">Street:</label>
             {{ address_form.street }}
-
+            {% for error in address_form.street.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="city">City:</label>
             {{ address_form.city }}
-
+            {% for error in address_form.city.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="state">State:</label>
             {{ address_form.state }}
-
+            {% for error in address_form.state.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="postal_code">Postal Code:</label>
             {{ address_form.postal_code }}
-
+            {% for error in address_form.postal_code.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
             <label for="country">Country:</label>
             {{ address_form.country }}
+            {% for error in address_form.country.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
 
             <button type="submit">Sign Up</button>
         </form>

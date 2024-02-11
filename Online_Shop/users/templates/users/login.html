@@ -89,23 +89,27 @@
     </nav>
 
     <div class="container">
-        <h2>Login</h2>
-        {% if error_message %}
-        <p style="color: red;">{{ error_message }}</p>
-        {% endif %}
         <form method="post">
             {% csrf_token %}
-            
-            <!-- Render Username Field -->
-            <label for="id_username">Username:</label>
+            {% if error_message %}
+                <p style="color: red;">{{ error_message }}</p>
+            {% endif %}
+            <label for="id_username">Username or Email:</label>
             {{ form.username }}
+            <!-- Display errors for username_or_email field -->
+            {% for error in form.username.errors %}
+                <p style="color: red;">{{ error }}</p>
+            {% endfor %}
             
-            <!-- Render Password Field -->
             <label for="id_password">Password:</label>
             {{ form.password }}
-        
+            <!-- Display errors for password field -->
+            {% for error in form.password.errors %}
+                <p style="color: red;">{{ error }}</p>
+            {% endfor %}
+            
             <button type="submit">Login</button>
-        </form>
+        </form>       
         <div class="signup-link">
             <p>   </p>
         </div>
