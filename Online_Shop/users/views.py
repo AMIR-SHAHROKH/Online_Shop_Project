@@ -11,8 +11,10 @@ from django.conf import settings
 from django.utils import timezone
 from django.views import View
 import random
+from django.contrib import messages
+from .forms import LoginForm
 import string
-from .forms import EmailForm, OTPForm , AddressForm , CustomLoginForm
+from .forms import EmailForm, OTPForm , AddressForm 
 from django.views.generic import TemplateView
 
 class AccountView(TemplateView):
@@ -30,22 +32,31 @@ class ShoppingCartView(View):
     #     context['cart_items'] = cart_items
     #     return context    
 # template_name = 'users/shopping_cart.html'
+
 class LoginView(View):
     def get(self, request):
-        form = CustomLoginForm()
+        form = LoginForm()
         return render(request, 'users/login.html', {'form': form})
 
     def post(self, request):
-        form = CustomLoginForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('main_page')  # Redirect to the home page after successful login
-        # If authentication fails or form is invalid, re-render the login form with an error message
-        return render(request, 'users/login.html', {'form': form, 'error_message': 'Invalid username or password'})
+                return redirect('/')  # Redirect to your desired URL after successful login
+            else:
+                # Authentication failed, display error message
+                error_message = 'Invalid username/email or password.'
+                messages.error(request, error_message)
+                return render(request, 'users/login.html', {'form': form, 'error_message': error_message})
+        else:
+            # Form is invalid, redisplay the login form with errors
+            return render(request, 'users/signup.html', {'form': form})
+
+
 
 class LogoutView(View):
     def get(self, request):
@@ -57,20 +68,21 @@ class SignUpView(View):
         user_form = UserForm()
         address_form = AddressForm()
         return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
-
+    
     def post(self, request):
         user_form = UserForm(request.POST)
         address_form = AddressForm(request.POST)
         if user_form.is_valid() and address_form.is_valid():
-            user = user_form.save(commit=False)
-            user.set_password(user.password)
-            user.save()
+            user = user_form.save()  # Save the user form
             address = address_form.save(commit=False)
-            address.user = user
+            address.user = user  # Assign the User instance, not the form data
             address.save()
+            # Assuming auth_login function is defined elsewhere
             auth_login(request, user)
-            return redirect('core/')  # Redirect to the home page after successful signup
+            return redirect('/')  # Redirect to your desired URL after successful signup
         else:
+            # Add an error message to be displayed in the template
+            messages.error(request, 'Invalid credentials. Please try again.')
             return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
         
 class LoginWithEmailOTPView(View):
