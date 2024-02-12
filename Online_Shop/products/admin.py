@@ -1,10 +1,14 @@
-
 from django.contrib import admin
 from .models import Category, Product, Review
+
+class ProductInline(admin.TabularInline):
+    model = Product.categories.through
+    extra = 0
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'subcategory')
     search_fields = ('name', 'subcategory')
+    inlines = [ProductInline]
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'has_image', 'discount')

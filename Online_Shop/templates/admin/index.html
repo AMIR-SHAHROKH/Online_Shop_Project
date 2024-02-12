@@ -1,0 +1,13 @@
+{% extends "admin/index.html" %}
+
+
+{% block content %}
+    <div class="welcome-message">
+        <h1>Welcome to the Amir Shahrokh's website admin panel</h1>
+        <p>This is a customized admin panel page for my Django project.</p>
+    </div>
+    <div class="custom-content">
+        <!-- Add your custom content here -->
+    </div>
+    {{ block.super }}
+{% endblock %}
