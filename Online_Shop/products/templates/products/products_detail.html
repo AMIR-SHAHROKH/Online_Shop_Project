@@ -87,9 +87,9 @@
                 {% endif %}
                 <p><strong>Categories:</strong>
                     {% for category in categories %}
-                    {{ category.name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
+                     </p>{{ category.name }}</p>
+                     {% endfor %}
+                
                 <div class="product-actions">
                     <button class="add-button">Add to Cart</button>
                     <div class="quantity-wrapper">

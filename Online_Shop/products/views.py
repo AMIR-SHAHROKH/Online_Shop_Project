@@ -25,8 +25,8 @@ class ProductList(APIView):
 class ProductDetailView(View):
     def get(self, request, slug, *args, **kwargs):
         product = get_object_or_404(Product, slug=slug)
-        categories = Category.objects.all()
-        return render(request, 'products/products_detail.html', {'product': product, 'categories': categories})
+        categories = product.categories.all()
+        return render(request, 'products/products_detail.html', {'product': product, 'categories':categories})
 
   
 class MainPageView(View):

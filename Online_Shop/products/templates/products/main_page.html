@@ -20,6 +20,7 @@
 
         .product-row {
             display: flex;
+            flex-direction: row;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -181,7 +182,7 @@
         content: attr(data-content);
         overflow: hidden;
         white-space: nowrap;
-        position: absolute;
+
         width: 100%;
         left: 0;
         top: 0;
@@ -219,17 +220,18 @@
         </div>
     </div>
     {% comment %} {%for product in products%} {% endcomment %}
-<section id="categories" class="container mt-4">
+<section id="categories" class="container mt-4" >
     {% for category in categories %}
         <div class="category">
             <h3 class="placeholder-glow">
                 <span class="placeholder col-12">{{ category.name }}</span>
             </h3>
             {% load static %}
-
+        </div>
+        <div class="goz" style="display:flex ;flex-direction: row;">
             {% for product in category.products.all %}
-                <div class="product-box">
-                    <a onclick="location.href='{% url 'products:product_detail' product.slug %}'">
+                <div class="product-box" style="align-items: center;">
+                    <a style="text-align: center;" onclick="location.href='{% url 'products:product_detail' product.slug %}'">
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                         {% else %}
