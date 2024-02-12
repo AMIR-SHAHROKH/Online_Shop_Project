@@ -14,6 +14,7 @@ import random
 from django.contrib import messages
 from .forms import LoginForm
 import string
+from .backend import custom_authenticate
 from .forms import EmailForm, OTPForm , AddressForm 
 from django.views.generic import TemplateView
 
@@ -38,12 +39,18 @@ class LoginView(View):
         form = LoginForm()
         return render(request, 'users/login.html', {'form': form})
 
+
+class LoginView(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(request, 'users/login.html', {'form': form})
+
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+            user = custom_authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('/')  # Redirect to your desired URL after successful login
@@ -54,10 +61,8 @@ class LoginView(View):
                 return render(request, 'users/login.html', {'form': form, 'error_message': error_message})
         else:
             # Form is invalid, redisplay the login form with errors
-            return render(request, 'users/signup.html', {'form': form})
-
-
-
+            return render(request, 'users/login.html', {'form': form})
+        
 class LogoutView(View):
     def get(self, request):
         auth_logout(request)
