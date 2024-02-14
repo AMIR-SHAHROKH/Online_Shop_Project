@@ -118,7 +118,12 @@
             {% for error in user_form.email.errors %}
                 <p class="error">{{ error }}</p>
             {% endfor %}
-    
+            <label for="email">Phone_number:</label>
+            {{ user_form.phone_number }}
+            {% for error in user_form.phone_number.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+
             <label for="password">Password:</label>
             {{ user_form.password }}
             {% for error in user_form.password.errors %}
