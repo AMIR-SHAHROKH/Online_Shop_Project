@@ -7,7 +7,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password','phone_number']
 
 class AddressForm(forms.ModelForm):
     class Meta:
@@ -28,4 +28,4 @@ class EmailForm(forms.Form):
     
 class OTPForm(forms.Form):
     otp = forms.CharField(label='OTP', max_length=6)
-    email = forms.EmailField(widget=forms.HiddenInput())
+    phone_number = forms.CharField(widget=forms.HiddenInput())
