@@ -17,7 +17,7 @@ secret_key.txt
 # Media files
 media/
 
-malipayamak/
+melipayamak/
 
 # Database
 db.sqlite3
