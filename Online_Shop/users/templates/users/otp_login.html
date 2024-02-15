@@ -88,10 +88,11 @@
         {% endif %}
         <form method="post">
             {% csrf_token %}
-            <!-- Email Form -->
-            <p>Enter your email:</p>
-            <input type="email" id="email-field" class="input-field" name="email" required>
-            <input type="submit" class="btn-primary" value="Submit" name="email_form">
+            <!-- Phone Number Form -->
+            <p>Enter your phone number:</p>
+            <input type="telephone_number" id="phone-number-field" class="input-field" name="phone_number" required>
+            <p></p>
+            <input type="submit" class="btn-primary" value="Submit" name="phone_number_form">
         </form>
 
         <!-- OTP Form -->
@@ -99,8 +100,11 @@
             {% csrf_token %}
             <p class="otp-message" id="otp-message"></p>
             <input type="number" id="otp-field" class="input-field" name="otp" required disabled>
+            <p></p>
             <input type="submit" class="btn-primary" value="Submit OTP" name="otp_form" disabled>
+            <p></p>
             <input type="submit" class="btn-primary" value="Resend OTP" name="resend_otp" disabled>
+            <p></p>
             <input type="submit" class="btn-primary" value="Submit" disabled>
         </form>
 
