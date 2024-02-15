@@ -6,8 +6,6 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .forms import UserForm
-from django.core.mail import send_mail
-from django.conf import settings
 from django.utils import timezone
 from django.views import View
 import random
@@ -17,6 +15,13 @@ import string
 from .backend import custom_authenticate
 from .forms import EmailForm, OTPForm , AddressForm 
 from django.views.generic import TemplateView
+from melipayamak import Api
+from django.contrib.auth import get_user_model
+from users.models import User
+from django.http import JsonResponse
+
+# Get the custom User model
+
 
 class AccountView(TemplateView):
     template_name = 'users/account.html'
@@ -89,51 +94,125 @@ class SignUpView(View):
             # Add an error message to be displayed in the template
             messages.error(request, 'Invalid credentials. Please try again.')
             return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
-        
-class LoginWithEmailOTPView(View):
+
+class LoginWithPhoneOTPView(View):
+    template_name = 'users/otp_login.html'
+
     def get(self, request):
-        return render(request, 'users/login_with_email_otp.html')
+        return render(request, self.template_name)
 
+    def generate_otp(self):
+            """
+            Generates a 6-digit OTP.
+            """
+            return ''.join(random.choices('0123456789', k=6))
     def post(self, request):
-        if 'email' in request.POST:  # Check if email form is submitted
-            email = request.POST.get('email')
-            try:
-                user = User.objects.get(email=email)
-                otp = self.generate_otp()
-                user.otp = otp
-                user.otp_created_at = timezone.now()
-                user.save()
-                self.send_otp_email(email, otp)
-                request.session['email'] = email  # Store email in session
-                return render(request, 'users/login_with_email_otp.html', message = "we sent you the email")
-            except User.DoesNotExist:
-                error = 'No user with this email address found.'
-                return render(request, 'users/login_with_email_otp.html', {'error': error})
-        elif 'otp' in request.POST:  # Check if OTP form is submitted
-            email = request.session.get('email')
-            otp = request.POST.get('otp')
-            try:
-                user = User.objects.get(email=email)
-                if user.otp == otp and user.otp_created_at > timezone.now() - timezone.timedelta(minutes=5):
-                    # OTP verification successful, proceed with login
-                    del request.session['email']  # Remove email from session
-                    # Add your login logic here, for example:
-                    # login(request, user)
-                    return redirect('home')  # Redirect to home page after login
+        phone_number = request.POST.get('phone_number')
+        
+        # Check if the phone number exists in the Users
+        try:
+            user = User.objects.get(phone_number=phone_number)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User with this phone number does not exist'}, status=400)
+
+        # Send SMS with OTP using your API
+        api = Api(user.username, user.password)  # provide your credentials here
+        sms = api.sms()
+        to = phone_number
+        _from = '50002710055405'
+        otp = self.generate_otp()  # you need to implement the OTP generation function
+        text = f'Your OTP is: {otp}'
+        # Send OTP message
+        response = sms.send(to, _from,text)
+        print(text)
+        print(response)
+        # Store the OTP in session for verification later
+        request.session['otp'] = otp
+        request.session['phone_number'] = phone_number
+        request.session.save()
+
+        return JsonResponse({'success': 'OTP sent successfully'}, status=200)
+
+class VerifyOTPAndLoginView(View):
+    def post(self, request, *args, **kwargs):
+        otp_entered = request.POST.get('otp')
+        phone_number = request.POST.get('phone_number')
+
+        # Retrieve the OTP from session
+        otp_stored = request.session.get('otp')
+        
+        if otp_entered == otp_stored:
+            # If OTP is correct, authenticate the user and log in
+            user = User.objects.get(profile__phone_number=phone_number)
+            if user:
+                user = authenticate(request, username=user.username, password=user.password)
+                if user is not None:
+                    login(request, user)
+                    return JsonResponse({'success': 'User logged in successfully'}, status=200)
                 else:
-                    error = 'Invalid OTP or OTP expired.'
-                    return render(request, 'users/login_with_email_otp.html', {'error': error})
-            except User.DoesNotExist:
-                error = 'No user with this email address found.'
-                return render(request, 'users/login_with_email_otp.html', {'error': error})
-        return render(request, 'users/login_with_email_otp.html')  # Default rendering
+                    return JsonResponse({'error': 'Authentication failed'}, status=400)
+            else:
+                return JsonResponse({'error': 'User does not exist'}, status=400)
+        else:
+            return JsonResponse({'error': 'Invalid OTP'}, status=400)
 
-    def generate_otp(self, length=6):
-        characters = string.digits
-        return ''.join(random.choice(characters) for _ in range(length))
+# class LoginWithPhoneOTPView(View):
+#     template_name = 'users/otp_login.html'
 
-    def send_otp_email(self, email, otp):
-        subject = 'Your One-Time Password (OTP)'
-        message = f'Your OTP is: {otp}'
-        from_email = settings.EMAIL_HOST_USER
-        send_mail(subject, message, from_email, [email])
+#     def get(self, request):
+#         return render(request, self.template_name)
+
+#     def generate_otp(self):
+#         # Implement your OTP generation logic here
+#         return '123456'  # Replace with your OTP generation logic
+
+#     def send_otp_sms(self, phone_number, otp):
+#         # Initialize the API with your credentials
+#         username = 'your_username'
+#         password = 'your_password'
+#         api = Api(username, password)
+        
+#         # Prepare the SMS message
+#         to = phone_number
+#         _from = 'your_sender_number'
+#         text = f'Your OTP is: {otp}'
+        
+#         # Send the OTP SMS
+#         response = api.sms().send(to, _from, text)
+        
+#         if response['result'] != '1':
+#             # Failed to send OTP SMS
+#             messages.error(request, 'Failed to send OTP SMS.')
+
+#     def post(self, request):
+#         if 'phone_number_form' in request.POST:
+#             phone_number = request.POST.get('phone_number')
+#             try:
+#                 user = User.objects.get(phone_number=phone_number)
+#                 otp = self.generate_otp()
+#                 user.otp = otp
+#                 user.otp_created_at = timezone.now()
+#                 user.save()
+#                 self.send_otp_sms(phone_number, otp)
+#                 request.session['phone_number'] = phone_number
+#                 messages.success(request, 'OTP sent successfully!')
+#                 return render(request, self.template_name, {'otp_sent': True})
+#             except User.DoesNotExist:
+#                 messages.error(request, 'No user with this phone number found.')
+#                 return render(request, self.template_name)
+
+#         elif 'otp_form' in request.POST:
+#             phone_number = request.session.get('phone_number')
+#             otp = request.POST.get('otp')
+#             try:
+#                 user = User.objects.get(phone_number=phone_number)
+#                 if user.otp == otp and user.otp_created_at > timezone.now() - timezone.timedelta(minutes=5):
+#                     del request.session['phone_number']
+#                     login(request, user)
+#                     return redirect('home')
+#                 else:
+#                     messages.error(request, 'Invalid OTP or OTP expired.')
+#                     return render(request, self.template_name, {'otp_sent': True})
+#             except User.DoesNotExist:
+#                 messages.error(request, 'No user with this phone number found.')
+#                 return render(request, self.template_name)
