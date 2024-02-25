@@ -1,0 +1,109 @@
+<!-- login_with_email_otp.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: lightcyan;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+        }
+
+        .container h2 {
+            text-align: center;
+        }
+
+        .container p {
+            margin-bottom: 10px;
+        }
+
+        .container input[type="email"],
+        .container input[type="number"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: blue;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        .signup-link a {
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>OTP Verification</h2>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <!-- Phone Number Form -->
+            <p>Enter your OTP:</p>
+            {{ form.otp }}
+            <p> </p>
+            <input type="submit" class="btn-primary" value="Submit" name="otp_form">
+        </form>
+
+        <!-- Sign Up and Login Links -->
+        <div class="signup-link">
+            <p>Haven't got your OTP message yet? maybe give it another try <a href="{% url 'users:log in with otp' %}" style="color: blue;">Phone number otp</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
