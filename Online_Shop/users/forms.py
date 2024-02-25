@@ -28,4 +28,6 @@ class EmailForm(forms.Form):
     
 class OTPForm(forms.Form):
     otp = forms.CharField(label='OTP', max_length=6)
-    phone_number = forms.CharField(widget=forms.HiddenInput())
+    phone_number = forms.CharField(label='phone number')
+class CheckOTP(forms.Form):
+    otp = forms.CharField(label='OTP', max_length=6)
