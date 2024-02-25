@@ -76,34 +76,24 @@
     <div class="container mt-5" style="margin-bottom: 3rem;">
         <div class="row">
             <div class="col-md-6">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+                <img id="product-image" src="{{product.image}}" alt="{{product.name}}" class="img-fluid">
             </div>
-            <div class="col-md-6" style="margin-top: 10px;">
-                <h2>{{ product.name }}</h2>
-                <p>{{ product.description }}</p>
-                <p><strong>Price:</strong> ${{ product.price }}</p>
-                {% if product.discount %}
-                <p><strong>Discount:</strong> {{ product.discount }}%</p>
-                {% endif %}
-                <p><strong>Categories:</strong>
-                    {% for category in categories %}
-                     </p>{{ category.name }}</p>
-                     {% endfor %}
-                
-                <div class="product-actions">
-                    <button class="add-button">Add to Cart</button>
-                    <div class="quantity-wrapper">
-                        <button class="quantity-button decrement">-</button>
-                        <input type="text" class="quantity-input" value="1" readonly>
-                        <button class="quantity-button increment">+</button>
-                    </div>
-                </div>
+            <div class="col-md-6">
+                <h2 id="product-name">{{product.name}}</h2>
+                <p id="product-description">{{product.description}}</p>
+                <p><strong>Price:</strong> $<span id="product-price">{{product.price}}</span></p>
+                <p><strong>Categories:</strong> 
+                  {% for  category in product.categories %}
+                  <span id="product-categories">{{category.name}}</span>
+                  {% endfor %}
+                </p>
+
             </div>
         </div>
     </div>
             
     <!-- Bootstrap JS and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     
@@ -139,6 +129,31 @@
             }
         });
     }
-    
+
+    // Call the fetchProductDetails function when the document is ready
+    $(document).ready(function() {
+        fetchProductDetails();
+    });
+    $(document).ready(function() {
+        // Define the URL of your Django REST Framework API endpoint
+        var apiUrl = '/api/product/{{product}}'; // Update with your API endpoint URL
+        
+        // Make AJAX request to fetch product details
+        $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            success: function(data) {
+                // Update HTML elements with received data
+                $('#product-image').attr('src', data.image);
+                $('#product-name').text(data.name);
+                $('#product-description').text(data.description);
+                $('#product-price').text(data.price);
+                $('#product-categories').text(data.categories.join(', '));
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching product details:', error);
+            }
+        });
+    });
         </script>
 </html>

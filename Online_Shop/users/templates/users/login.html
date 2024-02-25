@@ -94,7 +94,7 @@
             {% if error_message %}
                 <p style="color: red;">{{ error_message }}</p>
             {% endif %}
-            <label for="id_username">Username or Email:</label>
+            <label for="id_username">Username:</label>
             {{ form.username }}
             <!-- Display errors for username_or_email field -->
             {% for error in form.username.errors %}
