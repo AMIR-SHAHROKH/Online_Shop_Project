@@ -13,13 +13,13 @@ class AddressInline(admin.TabularInline):
 class CustomUserAdmin(UserAdmin):
     inlines = (UserProfileInline, AddressInline)
 
-    list_display = ('email', 'username', 'is_active', 'is_staff', 'role')
+    list_display = ('email', 'username', 'is_active', 'is_staff', 'role','phone_number')
     list_filter = ('is_active', 'is_staff', 'role')
     search_fields = ('email', 'username')
     ordering = ('email',)
 
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password')}),
+        (None, {'fields': ('email', 'username', 'password','phone_number')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'role', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'created_at', 'edited_at')}),
     )
