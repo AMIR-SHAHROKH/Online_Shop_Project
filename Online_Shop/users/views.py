@@ -11,9 +11,9 @@ from django.views import View
 import random
 from django.contrib import messages
 from .forms import LoginForm
-import string
+from django.urls import reverse
 from .backend import custom_authenticate
-from .forms import EmailForm, OTPForm , AddressForm 
+from .forms import EmailForm, OTPForm , AddressForm , CheckOTP
 from django.views.generic import TemplateView
 from melipayamak import Api
 from django.contrib.auth import get_user_model
@@ -38,11 +38,6 @@ class ShoppingCartView(View):
     #     context['cart_items'] = cart_items
     #     return context    
 # template_name = 'users/shopping_cart.html'
-
-class LoginView(View):
-    def get(self, request):
-        form = LoginForm()
-        return render(request, 'users/login.html', {'form': form})
 
 
 class LoginView(View):
@@ -99,7 +94,8 @@ class LoginWithPhoneOTPView(View):
     template_name = 'users/otp_login.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        form = OTPForm()
+        return render(request, self.template_name,{'form': form})
 
     def generate_otp(self):
             """
@@ -107,15 +103,22 @@ class LoginWithPhoneOTPView(View):
             """
             return ''.join(random.choices('0123456789', k=6))
     def post(self, request):
+        form = OTPForm(request.POST)
         phone_number = request.POST.get('phone_number')
-        
+        if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
         # Check if the phone number exists in the Users
         try:
             user = User.objects.get(phone_number=phone_number)
+            print(user)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User with this phone number does not exist'}, status=400)
+            messages.error(request, 'User with this phone number does not exist')
+            return render(request, self.template_name)
+
 
         # Send SMS with OTP using your API
+        user.password = "8e7deb21-3bc9-4810-8818-addf28bdde1c"
+        user.username = "09124555406"
         api = Api(user.username, user.password)  # provide your credentials here
         sms = api.sms()
         to = phone_number
@@ -131,30 +134,51 @@ class LoginWithPhoneOTPView(View):
         request.session['phone_number'] = phone_number
         request.session.save()
 
-        return JsonResponse({'success': 'OTP sent successfully'}, status=200)
+        messages.success(request, 'OTP sent successfully')
+        return redirect(reverse('users:enter-otp'))
 
 class VerifyOTPAndLoginView(View):
-    def post(self, request, *args, **kwargs):
-        otp_entered = request.POST.get('otp')
-        phone_number = request.POST.get('phone_number')
+    template_name = 'users/otp_enter.html'
 
-        # Retrieve the OTP from session
-        otp_stored = request.session.get('otp')
-        
-        if otp_entered == otp_stored:
-            # If OTP is correct, authenticate the user and log in
-            user = User.objects.get(profile__phone_number=phone_number)
-            if user:
-                user = authenticate(request, username=user.username, password=user.password)
-                if user is not None:
-                    login(request, user)
-                    return JsonResponse({'success': 'User logged in successfully'}, status=200)
-                else:
-                    return JsonResponse({'error': 'Authentication failed'}, status=400)
+    def get(self, request):
+        form = OTPForm(request.POST) 
+        return render(request, self.template_name,{'form': form })
+    
+    def post(self, request, *args, **kwargs):
+        form = OTPForm(request.POST)  # Instantiate the OTPForm with POST data
+        if form.is_valid():
+            otp_entered = form.cleaned_data['otp']
+            url_path = "profile/otp-enter"
+
+            # Retrieve the OTP from session
+            otp_stored = request.session.get('otp')
+
+            if otp_entered == otp_stored:
+                # If OTP is correct, authenticate the user and log in
+                try:
+                    user = User.objects.get(profile__phone_number=phone_number)
+                    if user:
+                        user = authenticate(request, username=user.username, password=user.password)
+                        if user is not None:
+                            login(request, user)
+                            messages.success(request, 'User logged in successfully')
+                            return redirect(url_path)
+                        else:
+                            messages.error(request, 'Authentication failed')
+                    else:
+                        messages.error(request, 'User does not exist')
+                except User.DoesNotExist:
+                    messages.error(request, 'User does not exist')
             else:
-                return JsonResponse({'error': 'User does not exist'}, status=400)
+                messages.error(request, 'Invalid OTP')
         else:
-            return JsonResponse({'error': 'Invalid OTP'}, status=400)
+            # If form is invalid, handle the errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+
+        # If the form is not valid or authentication fails, return to the same page
+        return render(request, 'otp_enter.html', {'form': form })
 
 # class LoginWithPhoneOTPView(View):
 #     template_name = 'users/otp_login.html'
