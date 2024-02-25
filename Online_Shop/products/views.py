@@ -8,6 +8,7 @@ from .models import Product , Category
 from .serializers import ProductSerializer
 from django.core.mail import send_mail
 from django.http import HttpResponse
+import requests
 
 class ProductList(APIView):
     def get(self, request, format=None):
@@ -22,13 +23,39 @@ class ProductList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ProductDetailView(View):
-    def get(self, request, slug, *args, **kwargs):
+class ProductDetailAPIView(APIView):
+    def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug)
-        categories = product.categories.all()
-        return render(request, 'products/products_detail.html', {'product': product, 'categories':categories})
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
 
-  
+class ProductDetailsView(View):
+    def get(self, request, slug):
+        # URL of your Django REST Framework API endpoint for fetching product details
+        api_url = f'http://127.0.0.1:8000/api/product/{slug}?format=json'  # Update with your API endpoint URL
+
+        try:
+            print(api_url)
+            # Make a GET request to fetch data from the DRF API
+            response = requests.get(api_url)
+
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Extract the JSON data from the response
+                data = response.json()
+
+                # Pass the product_data to your template to display to the user
+                return render(request, 'products/products_detail.html', {'product': data})
+            else:
+                # Handle other status codes if needed
+                # For example, if the product is not found (status code 404)
+                if response.status_code == 404:
+                    return HttpResponse("Product not found", status=404)
+                # Add more cases as needed
+        except requests.exceptions.RequestException as e:
+            # Handle exceptions if the request fails
+            return HttpResponse("Error fetching product data", status=500)
+
 class MainPageView(View):
     template_name = 'products/main_page.html'
     def get(self, request, *args, **kwargs):
