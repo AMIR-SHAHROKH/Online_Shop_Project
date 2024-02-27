@@ -1,4 +1,5 @@
 from django.views import View
+from rest_framework import generics
 from django.shortcuts import render,  get_object_or_404
 from .models import Product
 from rest_framework.views import APIView
@@ -8,7 +9,11 @@ from .models import Product , Category
 from .serializers import ProductSerializer
 from django.core.mail import send_mail
 from django.http import HttpResponse
+from django.views.generic import TemplateView
 import requests
+from django.contrib.auth.decorators import login_required
+from .forms import ProductSearchForm
+from django.http import JsonResponse
 
 class ProductList(APIView):
     def get(self, request, format=None):
@@ -29,11 +34,25 @@ class ProductDetailAPIView(APIView):
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
+class ProductslistAPIView(APIView):
+    def get(self, request, format=None):
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
+
+
+class Search(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'products/search.html')
+    
+    
 class ProductDetailsView(View):
     def get(self, request, slug):
         # URL of your Django REST Framework API endpoint for fetching product details
         api_url = f'http://127.0.0.1:8000/api/product/{slug}?format=json'  # Update with your API endpoint URL
-
+        product = get_object_or_404(Product, slug=slug)
+        categories = product.categories.all()
         try:
             print(api_url)
             # Make a GET request to fetch data from the DRF API
@@ -45,7 +64,7 @@ class ProductDetailsView(View):
                 data = response.json()
 
                 # Pass the product_data to your template to display to the user
-                return render(request, 'products/products_detail.html', {'product': data})
+                return render(request, 'products/products_detail.html', {'product': data, 'categories':categories})
             else:
                 # Handle other status codes if needed
                 # For example, if the product is not found (status code 404)
@@ -58,22 +77,27 @@ class ProductDetailsView(View):
 
 class MainPageView(View):
     template_name = 'products/main_page.html'
+
     def get(self, request, *args, **kwargs):
-        # Add any additional context data you want to pass to the template
+
         products = Product.objects.all()
+
         categories = Category.objects.all()
         context = {
-            'products': products ,'categories': categories,
+            'products': products,
+            'categories': categories,
         }
-        return render(request, self.template_name,context)
+        return render(request, self.template_name, context)
+class LoggedInMainPageView(View):
+    template_name = 'products/users_main_page.html'
 
+    def get(self, request, *args, **kwargs):
 
-def send_test_email(request):
-    send_mail(
-        'Test Email Subject',
-        'This is a test email message.',
-        'amir',
-        ['nafisehmehrabi90@gmail.com'],
-        fail_silently=False,
-    )
-    return HttpResponse('Test email sent successfully.')
+        products = Product.objects.all()
+
+        categories = Category.objects.all()
+        context = {
+            'products': products,
+            'categories': categories,
+        }
+        return render(request, self.template_name, context)
