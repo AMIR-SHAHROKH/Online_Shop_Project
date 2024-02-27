@@ -114,6 +114,22 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',  # Redis server address
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
+
+# # Optionally, you can use Redis for session storage
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# SESSION_CACHE_ALIAS = 'default'
+
+# # If you are using Celery for task queueing, you can use Redis as the message broker
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
