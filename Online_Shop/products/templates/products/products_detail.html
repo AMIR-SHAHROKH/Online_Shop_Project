@@ -58,7 +58,7 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light " >
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">Your Online Shop</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -71,7 +71,6 @@
             </ul>
         </div>
     </nav>
-
     <!-- Product Details -->
     <div class="container mt-5" style="margin-bottom: 3rem;">
         <div class="row">
@@ -82,16 +81,18 @@
                 <h2 id="product-name">{{product.name}}</h2>
                 <p id="product-description">{{product.description}}</p>
                 <p><strong>Price:</strong> $<span id="product-price">{{product.price}}</span></p>
-                <p><strong>Categories:</strong> 
-                  {% for  category in product.categories %}
-                  <span id="product-categories">{{category.name}}</span>
-                  {% endfor %}
+                {% if product.discount %}
+                    <p><strong>Discount:</strong> {{product.discount}}%</p>
+                {% endif %}
+                <p><strong>Categories:</strong>
+                    {% for category in categories %}
+                    {{ category.name }}{% if not forloop.last %}, {% endif %}                  
+                {% endfor %}	                  
                 </p>
 
             </div>
         </div>
     </div>
-            
     <!-- Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
