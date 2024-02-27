@@ -19,6 +19,7 @@ from melipayamak import Api
 from django.contrib.auth import get_user_model
 from users.models import User
 from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password
 
 # Get the custom User model
 
@@ -52,8 +53,8 @@ class LoginView(View):
             password = form.cleaned_data['password']
             user = custom_authenticate(request, username=username, password=password)
             if user is not None:
-                login(request, user)
-                return redirect('/')  # Redirect to your desired URL after successful login
+                auth_login(request, user)
+                return redirect(reverse('products:logged_in_main_page'))   # Redirect to your desired URL after successful login
             else:
                 # Authentication failed, display error message
                 error_message = 'Invalid username/email or password.'
@@ -75,21 +76,27 @@ class SignUpView(View):
         return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
     
     def post(self, request):
+
+        password = request.POST.get('password')
+
         user_form = UserForm(request.POST)
         address_form = AddressForm(request.POST)
         if user_form.is_valid() and address_form.is_valid():
             user = user_form.save()  # Save the user form
+            user.password = make_password(password)
+            user.save()
             address = address_form.save(commit=False)
             address.user = user  # Assign the User instance, not the form data
             address.save()
-            # Assuming auth_login function is defined elsewhere
+            # Assuming auth_lo
+            # gin function is defined elsewhere
             auth_login(request, user)
-            return redirect('/')  # Redirect to your desired URL after successful signup
+            return redirect(reverse('products:logged in main page'))  # Redirect to your desired URL after successful signup
         else:
             # Add an error message to be displayed in the template
             messages.error(request, 'Invalid credentials. Please try again.')
             return render(request, 'users/signup.html', {'user_form': user_form, 'address_form': address_form})
-
+        
 class LoginWithPhoneOTPView(View):
     template_name = 'users/otp_login.html'
 
@@ -141,14 +148,14 @@ class VerifyOTPAndLoginView(View):
     template_name = 'users/otp_enter.html'
 
     def get(self, request):
-        form = OTPForm(request.POST) 
+        form = CheckOTP(request.POST) 
         return render(request, self.template_name,{'form': form })
     
     def post(self, request, *args, **kwargs):
-        form = OTPForm(request.POST)  # Instantiate the OTPForm with POST data
+        form = CheckOTP(request.POST)  # Instantiate the OTPForm with POST data
         if form.is_valid():
             otp_entered = form.cleaned_data['otp']
-            url_path = "profile/otp-enter"
+            url_path = reverse("users:enter-otp")
 
             # Retrieve the OTP from session
             otp_stored = request.session.get('otp')
@@ -178,7 +185,7 @@ class VerifyOTPAndLoginView(View):
                     messages.error(request, f"{field}: {error}")
 
         # If the form is not valid or authentication fails, return to the same page
-        return render(request, 'otp_enter.html', {'form': form })
+        return render(request, 'users/otp_enter.html', {'form': form })
 
 # class LoginWithPhoneOTPView(View):
 #     template_name = 'users/otp_login.html'
