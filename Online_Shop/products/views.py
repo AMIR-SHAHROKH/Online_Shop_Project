@@ -12,7 +12,6 @@ from django.http import HttpResponse
 from django.views.generic import TemplateView
 import requests
 from django.contrib.auth.decorators import login_required
-from .forms import ProductSearchForm
 from django.http import JsonResponse
 
 class ProductList(APIView):
