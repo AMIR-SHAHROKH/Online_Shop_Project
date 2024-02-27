@@ -27,7 +27,7 @@ class EmailForm(forms.Form):
     email = forms.EmailField(label='Email', max_length=100)
     
 class OTPForm(forms.Form):
-    otp = forms.CharField(label='OTP', max_length=6)
+    # otp = forms.CharField(label='OTP', max_length=6)
     phone_number = forms.CharField(label='phone number')
 class CheckOTP(forms.Form):
     otp = forms.CharField(label='OTP', max_length=6)
