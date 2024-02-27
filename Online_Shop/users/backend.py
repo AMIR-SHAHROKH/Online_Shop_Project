@@ -7,7 +7,7 @@ def custom_authenticate(request, username=None, password=None):
         return None
 
     try:
-        user = User.objects.get(email=username)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
         # No user was found, return None
         return None
