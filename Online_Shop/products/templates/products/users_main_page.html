@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Featured Products - Your Online Shop</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1bPj/Z3L1oJ4aI9nLEHjpUnhsOuSf9oq70nNmj+oCMsZ6d4zjpPG2OvrXX3Z3ddcJrFZ+tMYhsX2X8ZHm+/z5Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: lightcyan; /* changed to light cyan */
+            color: #000; /* changed to black */
+            margin: 0;
+            padding: 0;
+        }
+
+        #carouselExample {
+            width: 100%;
+        }
+
+        .product-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .product-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px;
+            background-color: lightblue;
+        }
+
+        .product-image {
+            width: 100px;
+            height: 100px;
+        }
+
+        .product-name {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .product-price {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .product-description {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .product-actions {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+    
+        .add-button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        .quantity-wrapper {
+            display: none;
+            align-items: center;
+            margin-left: 10px;
+        }
+    
+        .quantity-button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 5px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        footer {
+            background-color: grey;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .about-me, .contact-info {
+            {% comment %} display: flex; {% endcomment %}
+            flex: 3;
+        }
+        
+        .about-me h3, .contact-info h3 {
+            color: #333;
+        }
+        
+        .contact-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .contact-info ul li {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .contact-info ul li i {
+            margin-right: 5px;
+        }
+        .contact-info ul li i {
+            margin-right: 5px;
+        }
+        
+        /* Style specific icons */
+        .fab.fa-whatsapp { color: green; }
+        .fab.fa-telegram { color: #0088cc; }
+        .fab.fa-instagram { color: #833ab4; }
+        /* Animation for glow effect */
+        @keyframes glow {
+        0% {
+            opacity: 0.5;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+        }
+        50% {
+            opacity: 1;
+            box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.5);
+        }
+        100% {
+            opacity: 0.5;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+        }
+        }
+
+        /* Animation for wave effect */
+        @keyframes wave {
+        0% {
+            transform: scaleX(1);
+        }
+        50% {
+            transform: scaleX(1.2);
+        }
+        100% {
+            transform: scaleX(1);
+        }
+        }
+
+        /* Apply the animations to the placeholders */
+        .placeholder-glow .placeholder {
+        animation: glow 2s infinite alternate;
+        }
+
+        .placeholder-wave .placeholder {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        }
+
+        .placeholder-wave .placeholder:before {
+        content: attr(data-content);
+        overflow: hidden;
+        white-space: nowrap;
+
+        width: 100%;
+        left: 0;
+        top: 0;
+        animation: wave 1s infinite;
+        }
+            /* styles.css */
+    .cookie-consent {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        background-color: grey; /* Transparent background */
+        color: #fff; /* White text */
+    }
+
+    .cookie-consent p {
+        margin-right: 10px;
+    }
+
+    .cookie-consent__btn {
+        background-color: lightcyan;
+        color: black;/* Blue color */
+        border: 1px solid #3498db; /* Blue border */
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .cookie-consent__btn:hover {
+        background-color: #3498db; /* Blue hover color */
+        color: #fff; /* White text on hover */
+    }
+
+      body {
+        position: relative;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #shopping-cart {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #007bff;
+        color: #fff;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: red;
+        color: #fff;
+        border-radius: 100%;
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+
+    </style>
+</head>
+<body>
+    <!-- cookie_consent.html -->
+<div id="cookieConsent" class="cookie-consent">
+    We use cookies to ensure you get the best experience on our website. 
+    <a href="#" class="cookie-consent__btn" onclick="acceptCookies();">Got it!</a>
+</div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Orders</a></li>
+            </ul>
+                <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="media/searching-bar.png" alt="search" style="width: 50px;"></a>    <!-- Search form -->
+    </nav>
+
+    <!-- Carousel of project pictures -->
+    <div id="carouselExample" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Add your project pictures here -->
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/1200x400.png?text=Project+1" class="d-block w-100" alt="Project 1">
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/1200x400.png?text=Project+2" class="d-block w-100" alt="Project 2">
+            </div>
+            <!-- Add more carousel items as needed -->
+        </div>
+    </div>
+    {% comment %} {%for product in products%} {% endcomment %}
+<section id="categories" class="container mt-4" >
+    {% for category in categories %}
+        <div class="category">
+            <h3 class="placeholder-glow">
+                <span class="placeholder col-12">{{ category.name }}</span>
+            </h3>
+            {% load static %}
+        </div>
+        <div class="goz" style="display:flex ;flex-direction: row;">
+            {% for product in category.products.all %}
+                <div class="product-box" style="align-items: center;">
+                    <a style="text-align: center;" onclick="location.href='{% url 'products:product_detail' product.slug %}'">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                        {% else %}
+                            <img src="{% static 'images/default_product_image.jpg' %}" alt="Default Image" class="product-image">
+                        {% endif %}
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-price">${{ product.price }}</p>
+                        <p class="product-description">{{ product.description }}</p>
+                    </a>
+                    <div class="product-actions">
+                        <button class="add-button">Add to Cart</button>
+                        <div class="quantity-wrapper">
+                            <button class="quantity-button decrement">-</button>
+                            <input type="text" class="quantity-input" value="1" readonly>
+                            <button class="quantity-button increment">+</button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <div id="shopping-cart">
+        <i class="fas fa-shopping-cart"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'"><img src="media/shopping-cart.png" alt="Icon description" style="width: 50px;"></i></a>
+        <span class="notification-badge">0</span>
+    </div>
+</section>
+
+    </section>        
+    <footer>
+        <div class="footer-content" style="justify-content: space-between;">
+            <div class="about-me">
+                <h3>About Me</h3>
+                <p> lorem ispum Lorem ipsum dolor sit amet,
+                     consectetur adipiscing elit. Sed nec nisi id risus consequat malesuada. Nulla facilisi.
+                      Phasellus malesuada dui ut odio malesuada feugiat. Donec in est in sapien cursus fermentum.
+                       Maecenas vitae ante eu magna convallis pharetra. 
+            <div class="contact-info">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> Phone: 123-456-7890</li>
+                    <li><i class="fab fa-whatsapp"></i> WhatsApp: 123-456-7890</li>
+                    <li><i class="fab fa-telegram"></i> Telegram: @yourtelegramusername</li>
+                    <li><i class="fab fa-instagram"></i> Instagram: @yourinstagramusername</li>
+                    <!-- Add more contact information if needed -->
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <footer class="text-center py-3">
+        <p>&copy; 2024 Your Online Shop. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        const addButtons = document.querySelectorAll('.add-button');
+        const incrementButtons = document.querySelectorAll('.increment');
+        const decrementButtons = document.querySelectorAll('.decrement');
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        const quantityWrappers = document.querySelectorAll('.quantity-wrapper');
+        const notificationBadge = document.querySelector('.notification-badge');
+        
+        // Initialize notification count
+        let notificationCount = 0;
+        notificationBadge.textContent = notificationCount;
+        
+        // Event listener for Add to Cart buttons and increment/decrement buttons
+        for (let i = 0; i < addButtons.length; i++) {
+            addButtons[i].addEventListener('click', () => {
+                addButtons[i].style.display = 'none';
+                quantityWrappers[i].style.display = 'flex';
+                
+                // Increase notification count when Add to Cart is clicked
+                notificationCount++;
+                updateNotificationBadge();
+            });
+        
+            incrementButtons[i].addEventListener('click', () => {
+                quantityInputs[i].value = parseInt(quantityInputs[i].value) + 1;
+                
+                // Increase notification count when increment button is clicked
+                notificationCount++;
+                updateNotificationBadge();
+            });
+        
+            decrementButtons[i].addEventListener('click', () => {
+                const currentValue = parseInt(quantityInputs[i].value);
+        
+                if (currentValue > 1) {
+                    quantityInputs[i].value = currentValue - 1;
+                } else {
+                    addButtons[i].style.display = 'block';
+                    quantityWrappers[i].style.display = 'none';
+                }
+                
+                // Decrease notification count when decrement button is clicked
+                notificationCount--;
+                updateNotificationBadge();
+            });
+        }
+        
+        // Function to update the notification badge
+        function updateNotificationBadge() {
+            notificationBadge.textContent = notificationCount;
+        }
+        
+    function acceptCookies() {
+        document.getElementById('cookieConsent').style.display = 'none';
+        // Set a cookie to remember that the user has accepted cookies
+        document.cookie = "cookie_consent_accepted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+    }// Define variables for cart count
+
+
+    </script>
+</body>
+</html>

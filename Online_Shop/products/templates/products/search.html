@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<style>
+    body {
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        flex-direction: column;
+        background-color: lightcyan;
+        font-family: Arial, sans-serif;
+    }
+    .container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10vh;
+    }
+    .search-container {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        border: 2px solid #333;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        margin: 20px;
+    }
+    
+    .search-bar {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    
+    .search-results {
+        list-style-type: none;
+        padding: 0;
+        width: 100%;
+    }
+    
+    .result-item {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .result-item:hover {
+        background-color: #f9f9f9;
+    }
+</style>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+    <div class="search-container">
+        <input type="search" placeholder="Search for products..." class="search-bar" id="searchInput">
+        <ul class="search-results" id="searchResults"></ul>
+    </div>
+</div>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const apiUrl = 'http://127.0.0.1:8000/api/products/list/?format=json';
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const products = data.map(item => ({
+                name: item.name,
+                slug: item.slug // Assuming your API response includes slugs
+            }));
+
+            searchInput.addEventListener('input', function () {
+                searchResults.innerHTML = '';
+                const searchTerm = this.value.toLowerCase().trim();
+
+                if (searchTerm !== '') {
+                    products.forEach(product => {
+                        if (product.name.toLowerCase().includes(searchTerm)) {
+                            const li = document.createElement('li');
+                            li.textContent = product.name;
+                            li.classList.add('result-item');
+
+                            // Add click event listener to each search result item
+                            li.addEventListener('click', function () {
+                                // Redirect to the product detail page
+                                window.location.href = `/product/${product.slug}`;
+                            });
+
+                            searchResults.appendChild(li);
+                        }
+                    });
+                }
+            });
+        });
+</script>
+</body>
+    
+</html>
