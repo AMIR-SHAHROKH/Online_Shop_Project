@@ -1,10 +1,14 @@
-
 from django.urls import path
-from . import views
+from .views import OrderListView, OrderDetailView, OrderListPageView, OrderDetailPageView, OrderItemCreatorAPIView
+from django.contrib.auth.decorators import login_required
 
-app_name = 'orders'
+ 
+app_name = "orders"
 
 urlpatterns = [
-    # path('create/', views.order_create, name='order_create'),
-    # Add more URL patterns as needed
+    path('api/orders/', OrderListView.as_view(), name='order_list_api'),
+    path('api/orders/<int:order_id>/', OrderDetailView.as_view(), name='order_detail_api'),
+    path('', OrderListPageView.as_view(), name='order_list_page'),
+    path('<int:order_id>/', OrderDetailPageView.as_view(), name='order_detail_page'),
+    path('api/order-item-creator/', OrderItemCreatorAPIView.as_view(), name='order_item_creator_api')
 ]
