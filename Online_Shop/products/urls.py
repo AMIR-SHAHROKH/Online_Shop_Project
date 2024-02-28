@@ -12,5 +12,6 @@ urlpatterns = [
     path('home/', login_required(LoggedInMainPageView.as_view()), name='logged_in_main_page'),
     path('api/products/list/', views.ProductslistAPIView.as_view() , name = 'list of products'),
     path('product/search/', views.Search.as_view(), name='search'),
+    path('checkout/', CheckoutView.as_view(), name='checkout'),
 ]
 # 'product/<int:pk>/<slug:slug>/

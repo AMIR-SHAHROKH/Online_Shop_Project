@@ -1,6 +1,6 @@
 from django.views import View
 from rest_framework import generics
-from django.shortcuts import render,  get_object_or_404
+from django.shortcuts import render,  get_object_or_404, redirect
 from .models import Product
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,6 +13,7 @@ from django.views.generic import TemplateView
 import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.urls import reverse
 
 class ProductList(APIView):
     def get(self, request, format=None):
@@ -74,19 +75,6 @@ class ProductDetailsView(View):
             # Handle exceptions if the request fails
             return HttpResponse("Error fetching product data", status=500)
 
-class MainPageView(View):
-    template_name = 'products/main_page.html'
-
-    def get(self, request, *args, **kwargs):
-
-        products = Product.objects.all()
-
-        categories = Category.objects.all()
-        context = {
-            'products': products,
-            'categories': categories,
-        }
-        return render(request, self.template_name, context)
 class LoggedInMainPageView(View):
     template_name = 'products/users_main_page.html'
 
@@ -100,3 +88,30 @@ class LoggedInMainPageView(View):
             'categories': categories,
         }
         return render(request, self.template_name, context)
+    
+class MainPageView(View):
+    template_name = 'products/main_page.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('products:logged_in_main_page'))
+        
+        products = Product.objects.all()
+        categories = Category.objects.all()
+        context = {
+            'products': products,
+            'categories': categories,
+        }
+        return render(request, self.template_name, context)
+
+    
+class CheckoutView(TemplateView):
+    template_name = 'products/checkout.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Assuming you have product data stored in a variable named 'product_list'
+        product_list = [...]  # Replace [...] with your product data
+        context['product_list'] = product_list
+        print(product_list)
+        return context
