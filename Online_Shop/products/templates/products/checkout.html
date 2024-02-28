@@ -1,0 +1,16 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout Page</h1>
+    <ul>
+        {% for product in product_list %}
+        <li>{{ product.pk }} - ${{ product.quantity }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
