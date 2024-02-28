@@ -6,7 +6,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .forms import UserForm
-from django.utils import timezone
+from django.http import Http404
 from django.views import View
 import random
 from django.contrib import messages
@@ -17,10 +17,14 @@ from .forms import EmailForm, OTPForm , AddressForm , CheckOTP
 from django.views.generic import TemplateView
 from melipayamak import Api
 from django.contrib.auth import get_user_model
-from users.models import User
+from users.models import User,Address
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView
+from users.models import User  # Import the custom user model
+from orders.serializers import OrderSerializer
+from orders.models import Order
 # Get the custom User model
 
 
@@ -67,7 +71,7 @@ class LoginView(View):
 class LogoutView(View):
     def get(self, request):
         auth_logout(request)
-        return redirect('login')  # Redirect to the login page after logout
+        return redirect('products:main_page')  # Redirect to the login page after logout
 
 class SignUpView(View):
     def get(self, request):
@@ -91,7 +95,7 @@ class SignUpView(View):
             # Assuming auth_lo
             # gin function is defined elsewhere
             auth_login(request, user)
-            return redirect(reverse('products:logged in main page'))  # Redirect to your desired URL after successful signup
+            return redirect(reverse('products:logged_in_main_page'))  # Redirect to your desired URL after successful signup
         else:
             # Add an error message to be displayed in the template
             messages.error(request, 'Invalid credentials. Please try again.')
@@ -186,64 +190,37 @@ class VerifyOTPAndLoginView(View):
 
         # If the form is not valid or authentication fails, return to the same page
         return render(request, 'users/otp_enter.html', {'form': form })
+    
+class UserProfileView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'users/profile.html'
+    context_object_name = 'user'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
 
-# class LoginWithPhoneOTPView(View):
-#     template_name = 'users/otp_login.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Retrieve orders for the current user
+        orders = Order.objects.filter(user=self.request.user)
+        # Serialize orders
+        order_serializer = OrderSerializer(orders, many=True)
+        context['orders'] = order_serializer.data
+        return context
 
-#     def get(self, request):
-#         return render(request, self.template_name)
-
-#     def generate_otp(self):
-#         # Implement your OTP generation logic here
-#         return '123456'  # Replace with your OTP generation logic
-
-#     def send_otp_sms(self, phone_number, otp):
-#         # Initialize the API with your credentials
-#         username = 'your_username'
-#         password = 'your_password'
-#         api = Api(username, password)
-        
-#         # Prepare the SMS message
-#         to = phone_number
-#         _from = 'your_sender_number'
-#         text = f'Your OTP is: {otp}'
-        
-#         # Send the OTP SMS
-#         response = api.sms().send(to, _from, text)
-        
-#         if response['result'] != '1':
-#             # Failed to send OTP SMS
-#             messages.error(request, 'Failed to send OTP SMS.')
-
-#     def post(self, request):
-#         if 'phone_number_form' in request.POST:
-#             phone_number = request.POST.get('phone_number')
-#             try:
-#                 user = User.objects.get(phone_number=phone_number)
-#                 otp = self.generate_otp()
-#                 user.otp = otp
-#                 user.otp_created_at = timezone.now()
-#                 user.save()
-#                 self.send_otp_sms(phone_number, otp)
-#                 request.session['phone_number'] = phone_number
-#                 messages.success(request, 'OTP sent successfully!')
-#                 return render(request, self.template_name, {'otp_sent': True})
-#             except User.DoesNotExist:
-#                 messages.error(request, 'No user with this phone number found.')
-#                 return render(request, self.template_name)
-
-#         elif 'otp_form' in request.POST:
-#             phone_number = request.session.get('phone_number')
-#             otp = request.POST.get('otp')
-#             try:
-#                 user = User.objects.get(phone_number=phone_number)
-#                 if user.otp == otp and user.otp_created_at > timezone.now() - timezone.timedelta(minutes=5):
-#                     del request.session['phone_number']
-#                     login(request, user)
-#                     return redirect('home')
-#                 else:
-#                     messages.error(request, 'Invalid OTP or OTP expired.')
-#                     return render(request, self.template_name, {'otp_sent': True})
-#             except User.DoesNotExist:
-#                 messages.error(request, 'No user with this phone number found.')
-#                 return render(request, self.template_name)
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        # Check if the current user is the same as the requested user
+        if obj != self.request.user:
+            raise Http404("You are not authorized to view this page")
+        return obj
+class AddressView(View):
+    def get(self, request):
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            # Retrieve addresses related to the currently logged-in user
+            user_addresses = Address.objects.filter(user=request.user)
+        else:
+            # If the user is not authenticated, set user_addresses to None
+            user_addresses = None
+        print(user_addresses)
+        return render(request, 'users/address.html', {'user_addresses': user_addresses})
