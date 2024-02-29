@@ -21,6 +21,8 @@ melipayamak/
 
 # Database
 db.sqlite3
+# Global gitignore
+*.sqlite3
 
 # Static files
 static/
