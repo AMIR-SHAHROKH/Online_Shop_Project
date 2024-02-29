@@ -1,29 +1,34 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
-# class TimeStampedModel(models.Model):
-#     created_at = models.CharField(max_length=20, editable=False)
-#     updated_at = models.CharField(max_length=20, editable=False)
-
-#     class Meta:
-#         abstract = True
-
-#     def save(self, *args, **kwargs):
-#         # Update the 'updated_at' timestamp before saving
-#         self.updated_at = str(jdatetime_datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
-
-#         if not self.created_at:
-#             self.created_at = str(jdatetime_datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
-
-#         super(TimeStampedModel, self).save(*args, **kwargs)
 
 class Order(models.Model):
+    PENDING = 'pending'
+    PAID = 'paid'
+    PAYMENT_STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (PAID, 'Paid'),
+    ]
+
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True)
     discount = models.ForeignKey('Discount', on_delete=models.SET_NULL, null=True)
+    payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default=PENDING)
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
+
+    def update_payment_status(self):
+        # Retrieve the associated final amount object
+        final_amount = self.finalamount_set.first()
+
+        if final_amount:
+            # If the final amount's payment status is 'paid', update the order's payment status
+            if final_amount.payment_status == 'paid':
+                self.payment_status = 'paid'
+                self.save()
+
 
 
 class OrderItem(models.Model):
@@ -57,6 +62,40 @@ class Discount(models.Model):
         return self.name
 
 class FinalAmount(models.Model):
+    PENDING = 'pending'
+    PAID = 'paid'
+    PAYMENT_STATUS_CHOICES = [
+        (PENDING, 'Pending'),
+        (PAID, 'Paid'),
+    ]
+
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     discounted_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default=PENDING)
+
+    def __str__(self):
+        return f"Final Amount - Order #{self.order.id}"
+
+    def calculate_discounted_amount(self):
+        # Retrieve the total amount from the associated order
+        total_amount = self.order.total_amount
+        
+        # Retrieve the discount associated with the order
+        discount = self.order.discount
+
+        if discount:
+            # Calculate the discounted amount based on the percentage
+            discount_amount = (total_amount * discount.percentage) / 100
+            
+            # Ensure that the discount does not exceed $100
+            if discount_amount > 100:
+                raise ValidationError("Discount amount cannot exceed $100.")
+            
+            self.discounted_amount = total_amount - discount_amount
+        else:
+            # If there's no discount, set the discounted amount as the total amount
+            self.discounted_amount = total_amount
+
+        # Save the instance after calculating the discounted amount
+        self.save()
 
