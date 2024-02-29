@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Product , Category
-from .serializers import ProductSerializer
+from .serializers import CustomProductSerializer
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.views.generic import TemplateView
@@ -18,11 +18,11 @@ from django.urls import reverse
 class ProductList(APIView):
     def get(self, request, format=None):
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+        serializer = CustomProductSerializer(products, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = ProductSerializer(data=request.data)
+        serializer = CustomProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -31,13 +31,13 @@ class ProductList(APIView):
 class ProductDetailAPIView(APIView):
     def get(self, request, slug):
         product = get_object_or_404(Product, slug=slug)
-        serializer = ProductSerializer(product)
+        serializer = CustomProductSerializer(product)
         return Response(serializer.data)
 
 class ProductslistAPIView(APIView):
     def get(self, request, format=None):
         products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
+        serializer = CustomProductSerializer(products, many=True)
         return Response(serializer.data)
 
 
@@ -115,3 +115,13 @@ class CheckoutView(TemplateView):
         context['product_list'] = product_list
         print(product_list)
         return context
+class CategoriesProductsView(APIView):
+    def get(self, request):
+        # Fetch all products
+        products = Product.objects.all()
+        
+        # Serialize the products
+        serializer = CustomProductSerializer(products, many=True)
+        
+        # Pass serialized data to the template
+        return render(request, 'products/categories.html', {'products': serializer.data})
