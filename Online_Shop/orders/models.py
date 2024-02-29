@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 
 class Order(models.Model):
     PENDING = 'pending'
@@ -18,16 +20,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
-
-    def update_payment_status(self):
-        # Retrieve the associated final amount object
-        final_amount = self.finalamount_set.first()
-
-        if final_amount:
-            # If the final amount's payment status is 'paid', update the order's payment status
-            if final_amount.payment_status == 'paid':
-                self.payment_status = 'paid'
-                self.save()
 
 
 
@@ -69,13 +61,13 @@ class FinalAmount(models.Model):
         (PAID, 'Paid'),
     ]
 
-    order = models.OneToOneField(Order, on_delete=models.CASCADE)
-    discounted_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='final_amount')
+    discounted_amount = models.DecimalField(max_digits=10, decimal_places=2 ,null=True,blank=True, default=0)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default=PENDING)
 
     def __str__(self):
         return f"Final Amount - Order #{self.order.id}"
-
+    
     def calculate_discounted_amount(self):
         # Retrieve the total amount from the associated order
         total_amount = self.order.total_amount
@@ -99,3 +91,22 @@ class FinalAmount(models.Model):
         # Save the instance after calculating the discounted amount
         self.save()
 
+
+@receiver(post_save, sender=FinalAmount)
+def calculate_discounted_amount(sender, instance, created, **kwargs):
+    if created:
+        # Ensure the method runs only when the instance is created
+        total_amount = instance.order.total_amount
+        discount = instance.order.discount
+
+        if discount:
+            discount_amount = (total_amount * discount.percentage) / 100
+            if discount_amount > 100:
+                raise ValidationError("Discount amount cannot exceed $100.")
+            
+            instance.discounted_amount = total_amount - discount_amount
+        else:
+            instance.discounted_amount = total_amount
+
+        # Modify the instance directly without saving it again
+        FinalAmount.objects.filter(pk=instance.pk).update(discounted_amount=instance.discounted_amount)
