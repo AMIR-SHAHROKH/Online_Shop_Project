@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -247,25 +246,141 @@
         padding: 3px 6px;
         font-size: 12px;
     }
-
+      .container1 {
+        width: 1000px;
+        margin: auto;
+        transition: 0.5s;
+      }
+      .list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 20px;
+        row-gap: 20px;
+        margin-top: 50px;
+      }
+      .list .item {
+        text-align: center;
+        background-color: #dce0e1;
+        padding: 20px;
+        box-shadow: 0 50px 50px #757676;
+        letter-spacing: 1px;
+      }
+      .list .item img {
+        width: 12rem;
+        height: 12rem;
+      }
+      .list .item .title {
+        font-weight: 600;
+        padding: 1rem 0rem 1rem 0rem;
+      }
+      .list .item .price {
+        margin: 10px;
+      }
+      .list .item button {
+        background-color: #1c1f25;
+        color: #fff;
+        width: 100%;
+        padding: 10px;
+      }
+      .card {
+        position: fixed;
+        top: 0;
+        left: 100%;
+        width: 500px;
+        background-color: #453e3b;
+        height: 100vh;
+        transition: 0.5s;
+      }
+      .active .card {
+        left: calc(100% - 500px);
+      }
+      .active .container {
+        transform: translateX(-200px);
+      }
+      .card h1 {
+        color: #e8bc0e;
+        font-weight: 100;
+        margin: 0;
+        padding: 0 20px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+      }
+      .card .checkOut {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .card .checkOut div {
+        background-color: #e8bc0e;
+        width: 100%;
+        height: 70px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .card .checkOut div:nth-child(2) {
+        background-color: #1c1f25;
+        color: #fff;
+      }
+      .listCard li {
+        display: grid;
+        grid-template-columns: 100px repeat(3, 1fr);
+        color: #fff;
+        row-gap: 10px;
+      }
+      .listCard li div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .listCard li img {
+        width: 4rem;
+        height: 4rem;
+      }
+      .listCard li button {
+        background-color: #fff5;
+        border: none;
+      }
+      .listCard .count {
+        margin: 0 10px;
+      }
+      .checkOutInCart {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 6rem;
+      }
+      .checkOutInCart > button {
+        padding: 1.15rem 4rem 1.15rem 4rem;
+        background-color: #007bff;
+        outline: none;
+        border: none;
+        border-radius: 0.875rem;
+        color: white;
+        margin: auto;
+      }
     </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">{{ user.email }}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Orders</a></li>
-            </ul>
-            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a>     <!-- Search form -->
-    </nav>
-
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">{{ user.email }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:category-products' %}'">Categories</a></li>
+        </ul>
+        <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a>     <!-- Search form -->
+</nav>
     <!-- Carousel of project pictures -->
     <div id="carouselExample" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
@@ -314,11 +429,26 @@
         </div>
     {% endfor %}
     <div id="shopping-cart">
-        <i class="fas fa-shopping-cart"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'"><img src="../../media/shopping-cart.png" alt="Icon description" style="width: 50px;"></i></a>
+        <i class="fas fa-shopping-cart"><img src="../../media/shopping-cart.png" alt="Icon description" style="width: 50px;"></i>
         <span class="notification-badge">0</span>
     </div>
 </section>
-
+<section style="margin: 10vh;">
+    <div class="container1" >
+        <div class="list"></div>
+      </div>
+      <div class="card">
+        <h1>Card</h1>
+        <ul class="listCard"></ul>
+        <!-- <div class="checkOutInCart">
+            <button onclick="checkout()">Checkout</button>
+        </div> -->
+        <div class="checkOut">
+          <a id="checkout-link" onclick="checkout()"><div class="total">0</div></a>
+          <div class="closeShopping">Close</div>
+        </div>
+      </div>
+</section>
     </section>        
     <footer>
         <div class="footer-content" style="justify-content: space-between;">
@@ -405,8 +535,204 @@
         // Set a cookie to remember that the user has accepted cookies
         document.cookie = "cookie_consent_accepted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
     }// Define variables for cart count
-
-
+    let openShopping = document.querySelector("#shopping-cart");
+    let closeShopping = document.querySelector(".closeShopping");
+    let list = document.querySelector(".list");
+    let listCard = document.querySelector(".listCard");
+    let body = document.querySelector("body");
+    let total = document.querySelector(".total");
+    let quantity = document.querySelector(".quantity");
+    
+    openShopping.addEventListener("click", () => {
+        body.classList.add("active");
+    });
+    closeShopping.addEventListener("click", () => {
+        body.classList.remove("active");
+    });
+    
+    let products = [];
+    let listCards = [];
+    const fetchProducts = async () => {
+        await fetch("http://127.0.0.1:8000/api/products/list/?format=json")
+            .then((response) => response.json())
+            .then((data) => {
+                //
+                products = data;
+                //
+                if (JSON.parse(localStorage.getItem("shoppingCart"))) {
+                    JSON.parse(localStorage.getItem("shoppingCart")).forEach(
+                        (item) => {
+                            let product = products.find(
+                                (prod) => Number(prod.id) == Number(item.id)
+                            );
+                            if (product) {
+                                console.log(product);
+                                let newDiv = document.createElement("li");
+                                newDiv.innerHTML = `
+                                    <div><img src="http://127.0.0.1:8000/${
+                                    product.image
+                                    }"/></div>
+                                    <div>${product.name}</div>
+                                    <div>$${product.price.toLocaleString()}</div>
+                                    <div>
+                                        <button onclick="changeQuantity(${item.id}, ${
+                                    item.quantity - 1
+                                    })">-</button>
+                                        <div class="count">${item.quantity}</div>
+                                        <button onclick="changeQuantity(${item.id}, ${
+                                    item.quantity + 1
+                                    })">+</button>
+                                    </div>`;
+                                listCard.appendChild(newDiv);
+                            }
+                        }
+                    );
+                }
+                initApp();
+            })
+            .catch((error) => {
+                console.error("Error fetching products:", error);
+            });
+    };
+    fetchProducts();
+    
+    function initApp() {
+        products.forEach((value, key) => {
+            let newDiv = document.createElement("div");
+            newDiv.classList.add("item");
+            newDiv.innerHTML = `
+                <img src="http://127.0.0.1:8000/${value.image}">
+                <div class="title">${value.name}</div>
+                <div class="price">$${value.price.toLocaleString()}</div>
+                <button onclick="addToCard(${value.id})">Add To Card</button>`;
+            list.appendChild(newDiv);
+        });
+    }
+    
+    function addToCard(id) {
+        if (!listCards.find((item) => item.id == id)) {
+            // copy product form list to list card
+            let productItem = products.find((product) => product.id == id);
+            productItem["quantity"] = 1;
+            listCards.push(productItem);
+        }
+        if (!localStorage.getItem("shoppingCart")) {
+            localStorage.setItem(
+                "shoppingCart",
+                JSON.stringify([{ id, quantity: 1 }])
+            );
+        }
+        if (JSON.parse(localStorage.getItem("shoppingCart"))) {
+            if (JSON.parse(localStorage.getItem("shoppingCart")).length > 0) {
+                if (
+                    !JSON.parse(localStorage.getItem("shoppingCart")).find(
+                        (item) => item.id == id
+                    )
+                ) {
+                    localStorage.setItem(
+                        "shoppingCart",
+                        JSON.stringify([
+                            ...JSON.parse(localStorage.getItem("shoppingCart")),
+                            { id, quantity: 1 },
+                        ])
+                    );
+                }
+            } else {
+                localStorage.setItem(
+                    "shoppingCart",
+                    JSON.stringify([{ id, quantity: 1 }])
+                );
+            }
+        }
+        reloadCard();
+    }
+    
+    function reloadCard() {
+        listCard.innerHTML = "";
+        let count = 0;
+        let totalPrice = 0;
+        listCards.forEach((value) => {
+            totalPrice = totalPrice + value.price;
+            count = count + value.quantity;
+            if (value != null) {
+                let newDiv = document.createElement("li");
+                newDiv.innerHTML = `
+                    <div><img src="http://127.0.0.1:8000/${value.image}"/></div>
+                    <div>${value.name}</div>
+                    <div>$${value.price.toLocaleString()}</div>
+                    <div>
+                        <button onclick="changeQuantity(${value.id}, ${
+                    value.quantity - 1
+                    })">-</button>
+                        <div class="count">${value.quantity}</div>
+                        <button onclick="changeQuantity(${value.id}, ${
+                    value.quantity + 1
+                    })">+</button>
+                    </div>`;
+                listCard.appendChild(newDiv);
+            }
+        });
+        total.innerText = totalPrice.toLocaleString();
+        quantity.innerText = count;
+    }
+    
+    function changeQuantity(id, quantity) {
+        console.log(listCards);
+        if (quantity == 0) {
+            listCards = listCards.filter((item) => item.id != id);
+            newLocalStorage = [
+                ...JSON.parse(localStorage.getItem("shoppingCart")).filter(
+                    (item) => item.id != id
+                ),
+            ];
+            if (newLocalStorage.length == 0) {
+                localStorage.removeItem("shoppingCart");
+            } else {
+                localStorage.setItem(
+                    "shoppingCart",
+                    JSON.stringify(newLocalStorage)
+                );
+            }
+        } else {
+            listCards[listCards.findIndex((item) => item.id == id)].quantity =
+                Number(quantity);
+            listCards[listCards.findIndex((item) => item.id == id)].price =
+                Number(quantity) * products.find((item) => item.id == id).price;
+            if (!localStorage.getItem("shoppingCart")) {
+                localStorage.setItem(
+                    "shoppingCart",
+                    JSON.stringify([{ id, quantity: quantity }])
+                );
+            } else {
+                localStorage.setItem(
+                    "shoppingCart",
+                    JSON.stringify([
+                        ...JSON.parse(localStorage.getItem("shoppingCart")).filter(
+                            (item) => item.id != id
+                        ),
+                        { id, quantity: quantity },
+                    ])
+                );
+            }
+        }
+        reloadCard();
+    }
+    
+    // Checkout Functionality
+    let checkOutButton = document.querySelector('.checkOut');
+    
+    async function checkout() {
+        if(localStorage.getItem('shoppingCart') && JSON.parse(localStorage.getItem('shoppingCart')).length > 0) {
+            await fetch("http://127.0.0.1:8000/orders/api/order-item-creator/", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                },
+            body: JSON.stringify(JSON.parse(localStorage.getItem('shoppingCart')))
+        })
+        }
+    }
+    
     </script>
 </body>
 </html>

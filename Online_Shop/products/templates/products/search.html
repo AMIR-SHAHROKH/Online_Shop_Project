@@ -76,8 +76,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:category-products' %}'">Categories</a></li>
             </ul>
         </div>
     </nav>

@@ -349,6 +349,22 @@
       .listCard .count {
         margin: 0 10px;
       }
+      .checkOutInCart {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 6rem;
+      }
+      .checkOutInCart > button {
+        padding: 1.15rem 4rem 1.15rem 4rem;
+        background-color: #007bff;
+        outline: none;
+        border: none;
+        border-radius: 0.875rem;
+        color: white;
+        margin: auto;
+      }
     </style>
 </head>
 <body>
@@ -366,7 +382,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:category-products' %}'">Categories</a></li>
             </ul>
                 <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="media/searching-bar.png" alt="search" style="width: 50px;"></a>    <!-- Search form -->
     </nav>
@@ -430,8 +446,11 @@
       <div class="card">
         <h1>Card</h1>
         <ul class="listCard"></ul>
+        <!-- <div class="checkOutInCart">
+            <button onclick="checkout()">Checkout</button>
+        </div> -->
         <div class="checkOut">
-          <a id="checkout-link" onclick="location.href='{% url 'products:checkout' %}'"><div class="total">0</div></a>
+          <a id="checkout-link" onclick="checkout()"><div class="total">0</div></a>
           <div class="closeShopping">Close</div>
         </div>
       </div>
@@ -708,36 +727,17 @@
     // Checkout Functionality
     let checkOutButton = document.querySelector('.checkOut');
     
-    checkOutButton.addEventListener('click', () => {
-        let productList = listCards.map(item => {
-            return {
-                id: item.id,
-                quantity: item.quantity
-            };
-        });
-    
-        fetch('http://localhost:8000/checkout/', {
+    async function checkout() {
+        if(localStorage.getItem('shoppingCart') && JSON.parse(localStorage.getItem('shoppingCart')).length > 0) {
+            await fetch("http://127.0.0.1:8000/orders/api/order-item-creator/", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(productList)
+                },
+            body: JSON.stringify(JSON.parse(localStorage.getItem('shoppingCart')))
         })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            // Handle the response from the server if needed
-            console.log(data);
-        })
-        .catch(error => {
-            // Handle errors
-            console.error('Error:', error);
-        });
-    });
+        }
+    }
     
     </script>
 </body>
