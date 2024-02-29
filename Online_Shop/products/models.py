@@ -4,9 +4,6 @@ from users.models import User
 from django.db import models
 from users.models import User
 
-def upload_to(instance, filename):
-    # Always return the placeholder image URL if the image is not provided
-    return 'https://via.placeholder.com/300'
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
