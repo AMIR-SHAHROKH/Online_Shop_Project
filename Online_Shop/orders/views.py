@@ -34,20 +34,17 @@ class OrderDetailPageView(TemplateView):
         context['order_id'] = kwargs['order_id']
         return context
     
-test_data = [
-    {"id": 1, "quantity": 3},
-    {"id": 3, "quantity": 1},
-]
+
 class OrderItemCreatorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             # Redirect the user to the accounts page for login
             return redirect(reverse('users:account'))
 
-        data =  [
-    {"id": 1, "quantity": 3},
-    {"id": 3, "quantity": 1},
-] # Get order items from request data
+        data = [
+   {"id": 1, "quantity": 3},
+   {"id": 3, "quantity": 1},
+]  # Get order items from request data
         created_order_items = []
         total_amount = 0
 
