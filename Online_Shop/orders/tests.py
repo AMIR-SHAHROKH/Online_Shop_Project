@@ -8,7 +8,52 @@ from .models import Order, OrderItem  # Import your models
 import requests
 from rest_framework.test import APIClient
 from rest_framework import status
+
+from django.test import TestCase
+from products.models import Product
+from orders.models import OrderItem
+
+class OrderItemTestCase(TestCase):
+    def setUp(self):
+        # Create a product with a discount
+        self.product_with_discount = Product.objects.create(
+            name='Test Product with Discount',
+            price=100.0,
+            discount=10.0  # 10% discount
+        )
+        # Create a product without a discount
+        self.product_without_discount = Product.objects.create(
+            name='Test Product without Discount',
+            price=200.0
+        )
+
+    def test_update_unit_price_with_discount(self):
+        # Create an order item associated with the product with discount
+        order_item = OrderItem.objects.create(
+            product=self.product_with_discount,
+            quantity=2
+        )
+        # Call the update_unit_price method
+        order_item.update_unit_price()
+
+        # Check if the unit price has been updated with the discounted price
+        self.assertEqual(order_item.unit_price, 90.0)  # 10% discount applied
+
+    def test_update_unit_price_without_discount(self):
+        # Create an order item associated with the product without discount
+        order_item = OrderItem.objects.create(
+            product=self.product_without_discount,
+            quantity=2
+        )
+        # Call the update_unit_price method
+        order_item.update_unit_price()
+
+        # Check if the unit price remains the same as the product price
+        self.assertEqual(order_item.unit_price, 200.0)  # No discount applied
+        
 class OrderModelTestCase(TestCase):
+
+
     @classmethod
     def setUpTestData(cls):
         # Create a sample user
