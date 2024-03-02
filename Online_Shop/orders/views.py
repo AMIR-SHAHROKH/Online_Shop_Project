@@ -10,6 +10,7 @@ from products.models import Product
 from orders.models import Order
 from django.urls import reverse
 from .serializers import OrderItemSerializer
+from django.core.exceptions import PermissionDenied
 
 class OrderListView(APIView):
     def get(self, request):
@@ -34,7 +35,29 @@ class OrderDetailPageView(TemplateView):
         context['order_id'] = kwargs['order_id']
         return context
     
+class OrderItemsAPIView(APIView):
+    def get(self, request, order_id):
+        try:
+            order = Order.objects.get(pk=order_id)
+            serializer = OrderSerializer(order)
+            order_items_data = serializer.get_order_items(order)
+            return Response(order_items_data)
+        except Order.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+class OrderItemsView(TemplateView):
+    template_name = 'orders/order_items.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        order_id = kwargs.get('order_id')
+        order = get_object_or_404(Order, pk=order_id)
+        
+        # Check if the order belongs to the current user
+        if order.user != request.user:
+            raise PermissionDenied("This order doesn't belong to you.")
+
+        return super().dispatch(request, *args, **kwargs)
+       
 class OrderItemCreatorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -44,6 +67,7 @@ class OrderItemCreatorAPIView(APIView):
         data = [
    {"id": 1, "quantity": 3},
    {"id": 3, "quantity": 1},
+   {"id": 2, "quantity": 2},
 ]  # Get order items from request data
         created_order_items = []
         total_amount = 0
