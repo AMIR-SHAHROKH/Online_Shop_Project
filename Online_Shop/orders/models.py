@@ -2,7 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.db.models.signals import pre_save
+
 
 class Order(models.Model):
     PENDING = 'pending'
@@ -27,24 +27,32 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, default=None)
+
+
 
     def __str__(self):
         return f"OrderItem #{self.id} - {self.product.name}"
     
     def update_unit_price(self, *args, **kwargs):
+        """Update the unit price based on the associated product's price and discount."""
         # Retrieve the product associated with the order item
         product = self.product
 
-        # Set the unit price of the order item to the price of the product
-        self.unit_price = product.price
-        
+        # Calculate the unit price considering the discount if it exists
+        if product.discount is not None and product.discount > 0:  # Check if discount is not None and greater than 0
+            discounted_price = product.price * (1 - product.discount / 100)
+            self.unit_price = discounted_price
+        else:
+            self.unit_price = product.price
+
         # Call the original save() method to save the order item
         super().save(*args, **kwargs)
+        
     def calculate_total_price(self):
         """Calculate the total price for this order item."""
         return self.quantity * self.unit_price
-    
+
 class Discount(models.Model):
 
     name = models.CharField(max_length=255)
@@ -68,15 +76,12 @@ class FinalAmount(models.Model):
     def __str__(self):
         return f"Final Amount - Order #{self.order.id}"
     
-    def calculate_discounted_amount(self):
+    def calculate_discounted_amount(self, discount):
         # Retrieve the total amount from the associated order
         total_amount = self.order.total_amount
         
-        # Retrieve the discount associated with the order
-        discount = self.order.discount
-
+        # Calculate the discounted amount based on the selected discount and order's total amount
         if discount:
-            # Calculate the discounted amount based on the percentage
             discount_amount = (total_amount * discount.percentage) / 100
             
             # Ensure that the discount does not exceed $100

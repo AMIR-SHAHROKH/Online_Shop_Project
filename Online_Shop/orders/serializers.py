@@ -1,7 +1,27 @@
 from rest_framework import serializers
-from .models import Order, OrderItem
+from .models import Order, OrderItem,Discount
+from products.models import Product
+
+class DiscountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discount
+        fields = '__all__'
+
+class OrderfinalSerializer(serializers.ModelSerializer):
+    discount_id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = Order
+        fields = ['total_amount', 'discount_id']
+        
+class ProductDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['name', 'price', 'discount']
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductDetailsSerializer()
+
     class Meta:
         model = OrderItem
         fields = ['id', 'order', 'product', 'quantity', 'unit_price']
@@ -11,9 +31,16 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_date', 'total_amount', 'discount', 'order_items']
+        fields = ['id', 'user', 'order_date', 'total_amount', 'discount', 'order_items','payment_status']
 
     # If you want to include write support for order_items, you need to override create and update methods
+    def get_order_items(self, obj):
+        order_items = OrderItem.objects.filter(order=obj)
+        order_items_data = OrderItemSerializer(order_items, many=True).data
+        total_amount = obj.total_amount  # Assuming total_amount is a field in the Order model
+        payment_status = obj.payment_status
+        return {'order_items': order_items_data, 'total_amount': total_amount, 'payment_status' : payment_status}
+        
     def create(self, validated_data):
         order_items_data = validated_data.pop('order_items')
         order = Order.objects.create(**validated_data)

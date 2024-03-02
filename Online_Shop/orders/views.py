@@ -4,13 +4,17 @@ from django.shortcuts import render, get_object_or_404,redirect
 from .models import Order
 from .serializers import OrderSerializer
 from django.views.generic import TemplateView
-from rest_framework import status
+from rest_framework import generics, status
 from .models import OrderItem
 from products.models import Product
-from orders.models import Order
+from orders.models import Order,FinalAmount,Discount
 from django.urls import reverse
-from .serializers import OrderItemSerializer
+from .serializers import OrderItemSerializer,DiscountSerializer
 from django.core.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
+from django.views import View
 
 class OrderListView(APIView):
     def get(self, request):
@@ -65,10 +69,10 @@ class OrderItemCreatorAPIView(APIView):
             return redirect(reverse('users:account'))
 
         data = [
-   {"id": 1, "quantity": 3},
-   {"id": 3, "quantity": 1},
-   {"id": 2, "quantity": 2},
-]  # Get order items from request data
+            {"id": 1, "quantity": 3},
+            {"id": 3, "quantity": 1},
+            {"id": 2, "quantity": 2},
+        ]  # Get order items from request data
         created_order_items = []
         total_amount = 0
 
@@ -90,14 +94,55 @@ class OrderItemCreatorAPIView(APIView):
                 quantity=quantity,
                 unit_price=product.price
             )
-            total_amount += order_item.unit_price * order_item.quantity
+
+            # Update the unit price based on the associated product's price and discount
+            order_item.update_unit_price()
+
+            # Calculate total amount after applying the updated unit price
+            total_amount += order_item.calculate_total_price()
             created_order_items.append(order_item)
 
         # Update total amount for the order
         order.total_amount = total_amount
         order.save()
 
-        # Serialize the created order items
-        serializer = OrderItemSerializer(created_order_items, many=True)
+        return Response({'message': 'Order items created successfully'}, status=status.HTTP_201_CREATED)
+class DiscountAPIView(generics.CreateAPIView):
+    queryset = Discount.objects.all()
+    serializer_class = DiscountSerializer
 
-        return Response({'created_order_items': serializer.data, 'order_id': order.id}, status=status.HTTP_201_CREATED)
+
+class ApplyDiscountView(View):
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, id=order_id)
+        final_amount_instance, created = FinalAmount.objects.get_or_create(order=order)
+        final_amount = final_amount_instance.discounted_amount if final_amount_instance.discounted_amount else order.total_amount
+        context = {'order': order, 'final_amount': final_amount}
+        return render(request, 'orders/apply_discount.html', context)
+
+    def post(self, request, order_id):
+        discount_name = request.POST.get('discount_name')
+        order = get_object_or_404(Order, id=order_id)
+        final_amount_instance, created = FinalAmount.objects.get_or_create(order=order)
+
+        if discount_name == "No Discount":
+            # If the user selects "No Discount", set the discounted amount to the total amount
+            final_amount_instance.discounted_amount = order.total_amount
+            final_amount_instance.save()
+            return JsonResponse({'success': 'No discount applied.', 'final_amount': order.total_amount})
+
+        try:
+            discount = Discount.objects.get(name=discount_name)
+        except Discount.DoesNotExist:
+            return JsonResponse({'error': 'Discount not found.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)  # Internal Server Error
+
+        try:
+            # Calculate the discounted amount based on the selected discount and order's total amount
+            final_amount_instance.calculate_discounted_amount(discount)
+            final_amount_instance.save()
+            final_amount = final_amount_instance.discounted_amount
+            return JsonResponse({'success': 'Discount applied successfully.', 'final_amount': final_amount})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

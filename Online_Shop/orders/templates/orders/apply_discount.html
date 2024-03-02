@@ -1,0 +1,86 @@
+<!-- apply_discount.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Discount</title>
+</head>
+<body>
+    <h1>Apply Discount</h1>
+    <div>
+        <h2>Order Details</h2>
+        <p>Order ID: <span id="order-id">{{ order.id }}</span></p>
+        <p>User: {{ order.user }}</p>
+        <p>Total Amount: ${{ order.total_amount }}</p>
+    </div>
+
+    <div>
+        <h2>Final Amount</h2>
+        <p>Before Discount: ${{ final_amount }}</p>
+        <p id="discount-status">No discount applied</p>
+        <form id="discount-form" method="POST">
+            {% csrf_token %}
+            <label for="discount_name">Discount Name:</label>
+            <input type="text" id="discount_name" name="discount_name">
+            <button type="submit">Apply Discount</button>
+        </form>
+        <button id="no-discount-btn">No Discount</button>
+        <p id="discount-applied-msg"></p>
+        <p id="final-amount"></p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#discount-form').submit(function(event) {
+                event.preventDefault();
+                
+                var discountName = $('#discount_name').val();
+                var orderID = $('#order-id').text();
+
+                $.ajax({
+                    url: `/orders/apply-discount/${orderID}/`,
+                    method: 'POST',
+                    data: {
+                        discount_name: discountName,
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    success: function(data) {
+                        $('#discount-applied-msg').text(data.success || '');
+                        $('#final-amount').text('Final Amount After Discount: $' + (data.final_amount || ''));
+                        $('#discount-status').text(data.success ? 'Discount applied' : 'No discount applied');
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error occurred.';
+                        $('#discount-applied-msg').text(errorMsg);
+                    }
+                });
+            });
+
+            $('#no-discount-btn').click(function() {
+                var orderID = $('#order-id').text();
+
+                $.ajax({
+                    url: `/orders/apply-discount/${orderID}/`,
+                    method: 'POST',
+                    data: {
+                        discount_name: 'No Discount',
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    success: function(data) {
+                        $('#discount-applied-msg').text(data.success || '');
+                        $('#final-amount').text('Final Amount After Discount: $' + (data.final_amount || ''));
+                        $('#discount-status').text(data.success ? 'Discount applied' : 'No discount applied');
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error occurred.';
+                        $('#discount-applied-msg').text(errorMsg);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
