@@ -14,7 +14,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/images/', blank=True, null=True)
     description = models.TextField()
     discount = models.DecimalField(max_digits=10, decimal_places=1, blank=True ,null=True)
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=1)
     categories = models.ManyToManyField(Category, related_name='products')
     slug = models.SlugField()
 
