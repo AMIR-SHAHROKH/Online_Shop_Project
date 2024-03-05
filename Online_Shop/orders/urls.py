@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import OrderListView, OrderDetailView, OrderListPageView, OrderDetailPageView, OrderItemCreatorAPIView,OrderItemsAPIView,OrderItemsView,ApplyDiscountView
+from .views import OrderListView, OrderDetailView, OrderListPageView, OrderDetailPageView, OrderItemCreatorAPIView,OrderItemsAPIView,OrderItemsView,ApplyDiscountView,CheckDiscountAPIView
 from django.contrib.auth.decorators import login_required
 
  
@@ -13,5 +13,7 @@ urlpatterns = [
     path('api/order-item-creator/', OrderItemCreatorAPIView.as_view(), name='order_item_creator_api'),
     path('api/order-items/<int:order_id>/', OrderItemsAPIView.as_view(), name='order-items'),
     path('order-items/<int:order_id>/', OrderItemsView.as_view(), name='order-items'),
-    path('apply-discount/<int:order_id>/', ApplyDiscountView.as_view(), name='apply_discount')
+    path('apply-discount/<int:order_id>/', ApplyDiscountView.as_view(), name='apply_discount'),
+    path('api/check-discount/', CheckDiscountAPIView.as_view(), name='check-discount')
+
 ]
