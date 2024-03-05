@@ -25,8 +25,12 @@ from django.views.generic import DetailView
 from users.models import User  # Import the custom user model
 from orders.serializers import OrderSerializer
 from orders.models import Order
+from django.conf import settings
+import redis
+from django.contrib.auth import authenticate, logout , login
 # Get the custom User model
 
+redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
 
 class AccountView(TemplateView):
     template_name = 'users/account.html'
@@ -136,6 +140,7 @@ class LoginWithPhoneOTPView(View):
         _from = '50002710055405'
         otp = self.generate_otp()  # you need to implement the OTP generation function
         text = f'Your OTP is: {otp}'
+        redis_client.setex(to,120, otp)
         # Send OTP message
         response = sms.send(to, _from,text)
         print(text)
@@ -160,22 +165,22 @@ class VerifyOTPAndLoginView(View):
         if form.is_valid():
             otp_entered = form.cleaned_data['otp']
             url_path = reverse("users:enter-otp")
-
+            phone_number = request.session["phone_number"]
             # Retrieve the OTP from session
             otp_stored = request.session.get('otp')
 
-            if otp_entered == otp_stored:
+            if redis_client.get(phone_number).decode("utf-8") == otp_entered:
                 # If OTP is correct, authenticate the user and log in
                 try:
-                    user = User.objects.get(profile__phone_number=phone_number)
-                    if user:
-                        user = authenticate(request, username=user.username, password=user.password)
-                        if user is not None:
-                            login(request, user)
-                            messages.success(request, 'User logged in successfully')
-                            return redirect(url_path)
-                        else:
-                            messages.error(request, 'Authentication failed')
+                    print(phone_number)
+                    user = User.objects.get(phone_number= phone_number)
+                    print(user)
+                    if user is not None:
+                        print("user.username")
+                        print("hello")
+                        login(request, user)
+                        messages.success(request, 'User logged in successfully')
+                        return redirect(reverse('products:logged_in_main_page'))
                     else:
                         messages.error(request, 'User does not exist')
                 except User.DoesNotExist:
@@ -213,6 +218,20 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         if obj != self.request.user:
             raise Http404("You are not authorized to view this page")
         return obj
+class OrdersView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'users/orders.html'
+    context_object_name = 'user'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Retrieve orders for the current user
+        orders = Order.objects.filter(user=self.request.user)
+        # Serialize orders
+        order_serializer = OrderSerializer(orders, many=True)
+        context['orders'] = order_serializer.data
+        return context
 class AddressView(View):
     def get(self, request):
         # Check if the user is authenticated

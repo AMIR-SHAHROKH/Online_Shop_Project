@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +40,7 @@ EMAIL_HOST_USER = 'amirshahrokh82@yahoo.com'  # Your email username
 EMAIL_HOST_PASSWORD = 'Amir82'  # Your email password
 EMAIL_USE_TLS = True  # Enable TLS encryption
 
+APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
@@ -114,6 +118,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+REDIS_HOST = env("REDISHOST")
+REDIS_PORT = env("REDISPORT")
+REDIS_DB = env("REDISDB")
+SECRET_KEY = env("SECRET_KEY")
+
 # CACHES = {
 #     'default': {
 #         'BACKEND': 'django_redis.cache.RedisCache',
@@ -143,7 +153,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+# AUTHENTICATION_BACKENDS = [
+# "users.backend.custom_authenticate",
+# ]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -159,3 +171,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+'DEFAULT_AUTHENTICATION_CLASSES': [
+'rest_framework.authentication.SessionAuthentication',
+],
+# Other settings...
+}
