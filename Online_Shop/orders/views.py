@@ -15,6 +15,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 class OrderListView(APIView):
     def get(self, request):
@@ -61,18 +63,15 @@ class OrderItemsView(TemplateView):
             raise PermissionDenied("This order doesn't belong to you.")
 
         return super().dispatch(request, *args, **kwargs)
-       
+   
 class OrderItemCreatorAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             # Redirect the user to the accounts page for login
             return redirect(reverse('users:account'))
 
-        data = [
-            {"id": 1, "quantity": 3},
-            {"id": 3, "quantity": 1},
-            {"id": 2, "quantity": 2},
-        ]  # Get order items from request data
+        data = request.data
+        print(data)
         created_order_items = []
         total_amount = 0
 
@@ -107,10 +106,6 @@ class OrderItemCreatorAPIView(APIView):
         order.save()
 
         return Response({'message': 'Order items created successfully'}, status=status.HTTP_201_CREATED)
-class DiscountAPIView(generics.CreateAPIView):
-    queryset = Discount.objects.all()
-    serializer_class = DiscountSerializer
-
 
 class ApplyDiscountView(View):
     def get(self, request, order_id):
@@ -121,28 +116,60 @@ class ApplyDiscountView(View):
         return render(request, 'orders/apply_discount.html', context)
 
     def post(self, request, order_id):
-        discount_name = request.POST.get('discount_name')
+        action = request.POST.get('action')
         order = get_object_or_404(Order, id=order_id)
         final_amount_instance, created = FinalAmount.objects.get_or_create(order=order)
 
-        if discount_name == "No Discount":
-            # If the user selects "No Discount", set the discounted amount to the total amount
-            final_amount_instance.discounted_amount = order.total_amount
-            final_amount_instance.save()
-            return JsonResponse({'success': 'No discount applied.', 'final_amount': order.total_amount})
+        if action == "apply_discount":
+            discount_name = request.POST.get('discount_name')
 
+            if discount_name == "No Discount":
+                final_amount_instance.discounted_amount = order.total_amount
+                final_amount_instance.save()
+                order.discount = None  # Remove the discount if it was applied before
+                order.save()
+                return JsonResponse({'success': 'No discount applied.', 'final_amount': order.total_amount})
+
+            try:
+                discount = Discount.objects.get(name=discount_name)
+            except Discount.DoesNotExist:
+                return JsonResponse({'error': 'Discount not found.'}, status=400)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+
+            try:
+                final_amount_instance.calculate_discounted_amount(discount)
+                final_amount_instance.save()
+                final_amount = final_amount_instance.discounted_amount
+                order.discount = discount  # Set the applied discount
+                order.save()
+                return JsonResponse({'success': 'Discount applied successfully.', 'final_amount': final_amount})
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=500)
+
+        elif action == "finalize_payment":
+            # Add logic for finalizing payment here
+            # For example, you could mark the order as paid or perform any necessary actions.
+            return JsonResponse({'success': 'Payment finalized successfully.'})
+
+        else:
+            return JsonResponse({'error': 'Invalid action.'}, status=400)
+
+
+            
+class DiscountAPIView(generics.CreateAPIView):
+    queryset = Discount.objects.all()
+    serializer_class = DiscountSerializer
+
+class CheckDiscountAPIView(APIView):
+    def get(self, request):
+        discount_name = request.query_params.get('discount_name')
+        if not discount_name:
+            return Response({'error': 'No discount name provided.'}, status=400)
+        
         try:
             discount = Discount.objects.get(name=discount_name)
+            serializer = DiscountSerializer(discount)
+            return Response({'exists': True, 'discount_data': serializer.data})
         except Discount.DoesNotExist:
-            return JsonResponse({'error': 'Discount not found.'}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)  # Internal Server Error
-
-        try:
-            # Calculate the discounted amount based on the selected discount and order's total amount
-            final_amount_instance.calculate_discounted_amount(discount)
-            final_amount_instance.save()
-            final_amount = final_amount_instance.discounted_amount
-            return JsonResponse({'success': 'Discount applied successfully.', 'final_amount': final_amount})
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return Response({'exists': False, 'message': 'No discount with that name.'})

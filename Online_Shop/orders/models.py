@@ -95,7 +95,10 @@ class FinalAmount(models.Model):
 
         # Save the instance after calculating the discounted amount
         self.save()
-
+    def set_payment_status_paid(self):
+        # Set the payment status of the associated order to 'paid'
+        self.order.payment_status = FinalAmount.PAID
+        self.order.save()
 
 @receiver(post_save, sender=FinalAmount)
 def calculate_discounted_amount(sender, instance, created, **kwargs):
@@ -115,3 +118,9 @@ def calculate_discounted_amount(sender, instance, created, **kwargs):
 
         # Modify the instance directly without saving it again
         FinalAmount.objects.filter(pk=instance.pk).update(discounted_amount=instance.discounted_amount)
+@receiver(post_save, sender=FinalAmount)
+def update_order_payment_status(sender, instance, created, **kwargs):
+    # Check if the payment status has been updated to 'paid'
+    if instance.payment_status == FinalAmount.PAID:
+        # Set the payment status of the associated order to 'paid'
+        instance.set_payment_status_paid()
