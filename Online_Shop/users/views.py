@@ -28,6 +28,8 @@ from orders.models import Order
 from django.conf import settings
 import redis
 from django.contrib.auth import authenticate, logout , login
+from django.core.mail import send_mail
+from users.tasks import send_email_task
 # Get the custom User model
 
 redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -99,6 +101,12 @@ class SignUpView(View):
             # Assuming auth_lo
             # gin function is defined elsewhere
             auth_login(request, user)
+            # subject = 'Welcome to Our Website!'
+            # message = 'Thank you for signing up. We hope you enjoy using our website.'
+            # from_email = settings.EMAIL_HOST_USER
+            # to_email = [user.email]
+            # send_mail(subject, message, from_email, to_email)
+            # send_email_task.delay(subject, message, from_email, to_email)
             return redirect(reverse('products:logged_in_main_page'))  # Redirect to your desired URL after successful signup
         else:
             # Add an error message to be displayed in the template
