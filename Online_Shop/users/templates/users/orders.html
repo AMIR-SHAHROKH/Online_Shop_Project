@@ -39,13 +39,20 @@
             border: 8px solid #ddd;
             box-shadow: 1px 1px 10px 1px #ddd inset;
             margin: 10px 5px;
+            color:goldenrod;
         }
         .top-status ul li.active {
             border-color: #ffc107;
             box-shadow: 1px 1px 20px 1px #ffc107 inset;
         }
         /* end top status */
-        
+        .top-status ul li.active .status-icon {
+            background-color: grey;
+        }
+        .top-status ul li.active-no-icon {
+            background-color: lightgrey;
+            color: black;
+        }
 
 
 
@@ -126,6 +133,8 @@
                                                     d="M432.039,413.22a6.975,6.975,0,0,1-4.783-1.89l-32.04-30A7,7,0,0,1,393,376.22V313.97a7,7,0,0,1,14,0v59.215l29.824,27.925a7,7,0,0,1-4.785,12.11Z"
                                                     style="fill:#2561a1" />
                                             </svg>
+                                            <li class="{% if order.payment_status == 'paid' %} active {% else %} active-no-icon {% endif %}">
+
                                             <span>{{ order.payment_status }}</span>
                                         </li>
                                     </ul>

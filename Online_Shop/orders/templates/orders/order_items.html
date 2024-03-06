@@ -1,78 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Product Description</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: cyan;
+        .product-image {
+            max-width: 80px;
+        }
+
+        .center-container {
+            background-color: #6fe3ff;
+            display: flex;
+            height: 95vh ;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .complete-payment-button {
+            background-color: #007bff;
             color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        .order-details {
-            background-color: black;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+
+        .complete-payment-button:hover {
+            background-color: #ffc107;
         }
-        .product {
-            margin-bottom: 10px;
-        }
-        .product-name {
-            font-weight: bold;
-            color: gray;
-        }
-    .h2 {
-        color :white;
-    }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Order Details</h1>
-        <div class="order-details">
-            <h2>Order Items</h2>
-            <div id="order-items">
-                <!-- Order items will be displayed here -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link"
+                        onclick="location.href='{% url 'products:category-products' %}'">Categories</a></li>
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img
+                    src="/media/orders/images/searching-bar.png" alt="search" style="width: 50px;"></a>
+            <!-- Search form -->
+        </div>
+    </nav>
+
+    <div class="center-container">
+        <div class="container">
+            <div class="main-body">
+                <div class="col-lg-8">
+                    <div class="card mt-4">
+                        <div class="card-body p-0">
+                            <h4 class="p-3 mb-0">Product Description</h4>
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Image</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">Unit Price</th>
+                                            <th scope="col">Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productDetails">
+                                        <!-- Product details will be added here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h2>Total Amount : <span id="total-amount"> $ </span></h2>
-            <h2>Payment Status : <span id="payment-status"></span></h2>
+
+            <div class="row mt-4">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Status</h5>
+                            <p class="card-text">Payment Status: <span id="paymentStatus"></span></p>
+                            <p class="card-text">Total Amount: <span id="totalAmount"></span></p>
+                            <button class="complete-payment-button" onclick="completePayment()">Complete Payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                var order_id = '{{ order_id }}'; // Replace '{{ order_id }}' with the actual order ID
-                $.ajax({
-                    url: '/orders/api/order-items/' + order_id + '/', // Construct the URL with the order ID
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        // Display order items
-                        var orderItemsHtml = '';
-                        $.each(data.order_items, function(index, item) {
-                            orderItemsHtml += '<div class="product">';
-                            orderItemsHtml += '<p><span class="product-name">' + item.product.name + '</span>: ';
-                            orderItemsHtml += 'Quantity ' + item.quantity + 'x</p>'; // Add 'X' after the quantity
-                            orderItemsHtml += '</div>';
-                        });
-                        $('#order-items').html(orderItemsHtml);
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/orders/api/order-items/{{ order_id }}/', // Replace with your API endpoint
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var orderItems = data.order_items;
+                    var totalAmount = data.total_amount;
+                    var paymentStatus = data.payment_status;
         
-                        // Display total amount
-                        $('#total-amount').text('$' + data.total_amount); // Add '$' before the total amount
+                    orderItems.forEach(function (item) {
+                        var product = item.product;
+                        var productName = product.name;
+                        var productPrice = parseFloat(item.unit_price);
+                        var productQuantity = item.quantity;
+                        var productDescription = product.description;
+                        var productImage = product.image;
         
-                        // Display payment status
-                        $('#payment-status').text(data.payment_status);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching order details:', error);
+                        var totalPrice = productPrice * productQuantity;
+        
+                        var productHTML = '<tr>';
+                        productHTML += '<td><img src="' + productImage + '" alt="' + productName +
+                            '" class="product-image"></td>';
+                        productHTML += '<td>' + productDescription + '</td>';
+                        productHTML += '<td>' + productQuantity + '</td>';
+                        productHTML += '<td>$' + productPrice.toFixed(2) + '</td>';
+                        productHTML += '<td>$' + totalPrice.toFixed(2) + '</td>';
+                        productHTML += '</tr>';
+        
+                        $('#productDetails').append(productHTML);
+                    });
+        
+                    $('#paymentStatus').text(paymentStatus);
+                    $('#totalAmount').text('$' + totalAmount.toFixed(2));
+        
+                    if (paymentStatus === 'paid') {
+                        $('.complete-payment-button').hide();
+                        $('.status-message').text('This order is being shipped ASAP');
                     }
-                });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error:', errorThrown);
+                }
             });
-        </script>
+        });
+        
+        function completePayment() {
+            // Extract the order ID from the current URL
+            var urlParts = window.location.href.split('/');
+            var orderId = urlParts[urlParts.length - 2]; // This assumes the order ID is the last part of the URL path
+        
+            // Construct the URL for the complete payment page
+            var redirectUrl = 'http://127.0.0.1:8000/orders/apply-discount/' + orderId + '/';
+        
+            // Redirect to the complete payment page with the order ID
+            window.location.href = redirectUrl;
+        }
+    </script>
 </body>
+
 </html>
+
+
+
+

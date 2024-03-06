@@ -5,32 +5,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Apply Discount</title>
+    <style>
+        body {
+            background-color: #6fe3ff;
+        }
+
+        .center-container {
+            background-color: #6fe3ff;
+            display: flex;
+            height: 95vh ;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding-top: 8vh;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+            background-color: #d4d9df;
+            border-radius: 2%;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5%;
+        
+        }
+
+        button:hover {
+            background-color: #ffc107;
+        }
+
+        #finalize-btn {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        #finalize-btn:hover {
+            background-color: #ffc107;
+        }
+    </style>
 </head>
 <body>
-    <h1>Apply Discount</h1>
-    <div>
-        <h2>Order Details</h2>
-        <p>Order ID: <span id="order-id">{{ order.id }}</span></p>
-        <p>User: {{ order.user }}</p>
-        <p>Total Amount: ${{ order.total_amount }}</p>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+                <li class="nav-item"><a class="nav-link"
+                        onclick="location.href='{% url 'products:category-products' %}'">Categories</a></li>
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img
+                    src="/media/orders/images/searching-bar.png" alt="search" style="width: 50px;"></a>
+            <!-- Search form -->
+        </div>
+    </nav>
+<div class= "center-container"> 
 
-    <div>
-        <h2>Final Amount</h2>
-        <p>Before Discount: ${{ final_amount }}</p>
-        <p id="discount-status">No discount applied</p>
-        <form id="discount-form" method="POST">
-            {% csrf_token %}
-            <label for="discount_name">Discount Name:</label>
-            <input type="text" id="discount_name" name="discount_name">
-            <button type="submit">Apply Discount</button>
-        </form>
-        <button id="no-discount-btn">No Discount</button>
-        <p id="discount-applied-msg"></p>
-        <p id="final-amount"></p>
-    </div>
+    <div class="container">
+        <h1>Apply Discount</h1>
+        <div>
+            <h2>Order Details</h2>
+            <p>Order ID: <span id="order-id">{{ order.id }}</span></p>
+            <p>User: {{ order.user }}</p>
+            <p>Total Amount: ${{ order.total_amount }}</p>
+            <p>Order status: {{ order.payment_status }}</p>
+        </div>
 
+        <div>
+            <h2>Final Amount</h2>
+            <p>Before Discount: ${{ final_amount }}</p>
+            <p id="discount-status">No discount applied</p>
+            <form id="discount-form" method="POST">
+                {% csrf_token %}
+                <label for="discount_name">Discount Name:</label>
+                <input type="text" id="discount_name" name="discount_name">
+                <button type="submit" name="action" value="apply_discount">Apply Discount</button>
+            </form>
+            <p id="discount-applied-msg"></p>
+            <p id="final-amount"></p>
+        </div>
+        <button id="finalize-btn">Finalize Payment</button>
+    </div>
+</div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -44,6 +119,7 @@
                     url: `/orders/apply-discount/${orderID}/`,
                     method: 'POST',
                     data: {
+                        action: 'apply_discount',
                         discount_name: discountName,
                         csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
                     },
@@ -59,26 +135,79 @@
                 });
             });
 
-            $('#no-discount-btn').click(function() {
+            $('#finalize-btn').click(function() {
                 var orderID = $('#order-id').text();
 
                 $.ajax({
                     url: `/orders/apply-discount/${orderID}/`,
                     method: 'POST',
                     data: {
-                        discount_name: 'No Discount',
+                        action: 'finalize_payment',
                         csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
                     },
                     success: function(data) {
-                        $('#discount-applied-msg').text(data.success || '');
-                        $('#final-amount').text('Final Amount After Discount: $' + (data.final_amount || ''));
-                        $('#discount-status').text(data.success ? 'Discount applied' : 'No discount applied');
+                        alert(data.success || 'Payment finalized successfully.');
+                        // You can perform any additional actions after payment finalization
                     },
                     error: function(xhr, textStatus, errorThrown) {
                         var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error occurred.';
-                        $('#discount-applied-msg').text(errorMsg);
+                        alert(errorMsg);
                     }
                 });
+            });
+
+            $('#apply-btn').click(function() {
+                var discountName = $('#discount_name').val();
+                var message = $('#discount-applied-msg').text().trim();
+
+                if (message === 'Discount applied.') {
+                    // Perform finalization of payment
+                    var orderID = $('#order-id').text();
+                    $.ajax({
+                        url: `/orders/apply-discount/${orderID}/`,
+                        method: 'POST',
+                        data: {
+                            action: 'finalize_payment',
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        success: function(data) {
+                            alert(data.success || 'Payment finalized successfully.');
+                            // You can perform any additional actions after payment finalization
+                        },
+                        error: function(xhr, textStatus, errorThrown) {
+                            var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error occurred.';
+                            alert(errorMsg);
+                        }
+                    });
+                } else {
+                    applyDiscount(discountName);
+                }
+            });
+
+            $('#discount_name').on('input', function() {
+                var discountName = $(this).val();
+
+                if (!discountName) {
+                    $('#discount-applied-msg').text('No discount added.');
+                } else if (discountName === "No Discount") {
+                    $('#discount-applied-msg').text('No discount applied.');
+                } else {
+                    $.ajax({
+                        url: `/orders/api/check-discount/?discount_name=${discountName}`,
+                        method: 'GET',
+                        success: function(data) {
+                            if (data.exists) {
+                                $('#discount-applied-msg').text('Discount found,press apply discount and the finilize your payment.');
+                            } else {
+                                $('#discount-applied-msg').text('No discount with that name.');
+                            }
+                        },
+                        error: function(xhr, textStatus, errorThrown) {
+                            var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Error occurred.';
+                            $('#discount-applied-msg').text(errorMsg);
+                        }
+                    });
+                }
             });
         });
     </script>

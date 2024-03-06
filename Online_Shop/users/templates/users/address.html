@@ -60,11 +60,11 @@
             </ul>
             <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a> <!-- Search form -->
     </nav>
+    <h1 style="text-align: center;">{{ user.username }}'s Address:</h1>
+    {% if user.is_authenticated %}
+    {% for address in user.addresses.all %}
+    
     <div class="container">
-        <h1>User Address Data</h1>
-        {% if user.is_authenticated %}
-            <h2>{{ user.username }}'s Address:</h2>
-                {% for address in user.addresses.all %}
                     <div class="address-profile">
                         <div class="address-item">
                             <strong>City:</strong> <span>{{ address.city }}</span>
