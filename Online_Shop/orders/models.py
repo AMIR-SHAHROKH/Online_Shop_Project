@@ -70,35 +70,43 @@ class FinalAmount(models.Model):
     ]
 
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='final_amount')
-    discounted_amount = models.DecimalField(max_digits=10, decimal_places=2 ,null=True,blank=True, default=0)
+    discounted_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default=PENDING)
 
     def __str__(self):
         return f"Final Amount - Order #{self.order.id}"
     
     def calculate_discounted_amount(self, discount):
-        # Retrieve the total amount from the associated order
         total_amount = self.order.total_amount
-        
-        # Calculate the discounted amount based on the selected discount and order's total amount
+
         if discount:
             discount_amount = (total_amount * discount.percentage) / 100
-            
-            # Ensure that the discount does not exceed $100
             if discount_amount > 100:
                 raise ValidationError("Discount amount cannot exceed $100.")
             
             self.discounted_amount = total_amount - discount_amount
         else:
-            # If there's no discount, set the discounted amount as the total amount
             self.discounted_amount = total_amount
 
-        # Save the instance after calculating the discounted amount
         self.save()
+        
     def set_payment_status_paid(self):
-        # Set the payment status of the associated order to 'paid'
         self.order.payment_status = FinalAmount.PAID
         self.order.save()
+
+    def update_order_total_and_payment_status(self):
+        # Calculate the total amount for the order
+        total_amount = sum(item.calculate_total_price() for item in self.order.orderitem_set.all())
+        
+        # Update the total amount for the order
+        self.order.total_amount = total_amount
+        self.order.save()
+        
+        # Set the payment status to 'paid' if the discounted amount is greater than 0
+        if self.discounted_amount > 0:
+            self.payment_status = FinalAmount.PAID
+            self.save()
+
 
 @receiver(post_save, sender=FinalAmount)
 def calculate_discounted_amount(sender, instance, created, **kwargs):
@@ -124,3 +132,9 @@ def update_order_payment_status(sender, instance, created, **kwargs):
     if instance.payment_status == FinalAmount.PAID:
         # Set the payment status of the associated order to 'paid'
         instance.set_payment_status_paid()
+@receiver(post_save, sender=FinalAmount)
+def update_order_total_and_payment_status(sender, instance, created, **kwargs):
+    # Check if a new FinalAmount instance is created
+    if created:
+        # Call the method to update order total and payment status
+        instance.update_order_total_and_payment_status()
