@@ -13,5 +13,5 @@ urlpatterns = [
     path('cart/', views.ShoppingCartView.as_view(), name='shopping_cart'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
     path('addresses/', views.AddressView.as_view(), name='addresses'),
-    path('orders/<str:username>', views.OrdersView.as_view(), name='user-orders')
+    path('orders/<str:username>', views.OrdersView.as_view(), name='user-orders')    
 ]
