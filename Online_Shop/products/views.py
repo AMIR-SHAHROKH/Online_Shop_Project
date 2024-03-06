@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.urls import reverse
 
+
 class ProductList(APIView):
     def get(self, request, format=None):
         products = Product.objects.all()
@@ -94,7 +95,7 @@ class MainPageView(View):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect(reverse('products:logged_in_main_page'))
+            return redirect('products:logged_in_main_page')
         
         products = Product.objects.all()
         categories = Category.objects.all()
