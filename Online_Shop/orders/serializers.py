@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Order, OrderItem,Discount
+from .models import Order, OrderItem,Discount,FinalAmount
 from products.models import Product
 
 class DiscountSerializer(serializers.ModelSerializer):
@@ -17,7 +17,11 @@ class OrderfinalSerializer(serializers.ModelSerializer):
 class ProductDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'discount','image']
+        fields = ['name', 'price', 'discount','image','description']
+class FinalAmountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FinalAmount
+        fields = ['discounted_amount']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductDetailsSerializer()
