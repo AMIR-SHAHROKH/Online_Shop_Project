@@ -64,10 +64,17 @@ class LoginView(View):
             user = custom_authenticate(request, username=username, password=password)
             if user is not None:
                 auth_login(request, user)
+                subject = 'Welcome to Our Website!'
+                message = 'Thank you for signing up. We hope you enjoy using our website.'
+                from_email = settings.EMAIL_HOST_USER
+                to_email = [user.email]
+                # response = send_mail(subject, message, from_email, to_email)
+                # print(response)
+                send_email_task.delay(subject, message, from_email, to_email)
                 return redirect(reverse('products:logged_in_main_page'))   # Redirect to your desired URL after successful login
             else:
                 # Authentication failed, display error message
-                error_message = 'Invalid username/email or password.'
+                error_message = 'Invalid username or password.'
                 messages.error(request, error_message)
                 return render(request, 'users/login.html', {'form': form, 'error_message': error_message})
         else:
@@ -101,12 +108,12 @@ class SignUpView(View):
             # Assuming auth_lo
             # gin function is defined elsewhere
             auth_login(request, user)
-            # subject = 'Welcome to Our Website!'
-            # message = 'Thank you for signing up. We hope you enjoy using our website.'
-            # from_email = settings.EMAIL_HOST_USER
-            # to_email = [user.email]
+            subject = 'Welcome to Our Website!'
+            message = 'Thank you for signing up. We hope you enjoy using our website.'
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [user_form.cleaned_data['email']]
             # send_mail(subject, message, from_email, to_email)
-            # send_email_task.delay(subject, message, from_email, to_email)
+            send_email_task.delay(subject, message, from_email, to_email)
             return redirect(reverse('products:logged_in_main_page'))  # Redirect to your desired URL after successful signup
         else:
             # Add an error message to be displayed in the template
