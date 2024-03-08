@@ -12,7 +12,7 @@ class CustomProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('name', 'image', 'description', 'discount', 'price', 'categories', 'slug')
+        fields = ( 'id', 'name', 'image', 'description', 'discount', 'price', 'categories', 'slug')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

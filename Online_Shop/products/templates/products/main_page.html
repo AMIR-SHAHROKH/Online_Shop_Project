@@ -485,7 +485,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-        const addButtons = document.querySelectorAll('.add-button');
+        {% comment %} const addButtons = document.querySelectorAll('.add-button');
         const incrementButtons = document.querySelectorAll('.increment');
         const decrementButtons = document.querySelectorAll('.decrement');
         const quantityInputs = document.querySelectorAll('.quantity-input');
@@ -535,223 +535,156 @@
         function updateNotificationBadge() {
             notificationBadge.textContent = notificationCount;
         }
-        
+         {% endcomment %}
     function acceptCookies() {
         document.getElementById('cookieConsent').style.display = 'none';
         // Set a cookie to remember that the user has accepted cookies
         document.cookie = "cookie_consent_accepted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
     }// Define variables for cart count
+// Define variables for cart count
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM content loaded");
+
     let openShopping = document.querySelector("#shopping-cart");
+    console.log("openShopping:", openShopping);
+
     let closeShopping = document.querySelector(".closeShopping");
+    console.log("closeShopping:", closeShopping);
+
     let list = document.querySelector(".list");
+    console.log("list:", list);
+
     let listCard = document.querySelector(".listCard");
+    console.log("listCard:", listCard);
+
     let body = document.querySelector("body");
+    console.log("body:", body);
+
     let total = document.querySelector(".total");
-    let quantity = document.querySelector(".quantity");
-    
-    openShopping.addEventListener("click", () => {
-        body.classList.add("active");
-    });
-    closeShopping.addEventListener("click", () => {
-        body.classList.remove("active");
-    });
-    
+    console.log("total:", total);
+
+    let quantity = document.querySelector(".notification-badge");
+    console.log("quantity:", quantity);
+
+    let checkOutButton = document.querySelector('.checkOut');
+    console.log("checkOutButton:", checkOutButton);
+
     let products = [];
     let listCards = [];
+
+    openShopping.addEventListener("click", () => {
+        console.log("Shopping cart clicked");
+        body.classList.add("active");
+    });
+
+    closeShopping.addEventListener("click", () => {
+        console.log("Close shopping clicked");
+        body.classList.remove("active");
+    });
+
     const fetchProducts = async () => {
-        await fetch("http://127.0.0.1:8000/api/products/list/?format=json")
-            .then((response) => response.json())
-            .then((data) => {
-                //
-                products = data;
-                //
-                if (JSON.parse(localStorage.getItem("shoppingCart"))) {
-                    JSON.parse(localStorage.getItem("shoppingCart")).forEach(
-                        (item) => {
-                            let product = products.find(
-                                (prod) => Number(prod.id) == Number(item.id)
-                            );
-                            if (product) {
-                                console.log(product);
-                                let newDiv = document.createElement("li");
-                                newDiv.innerHTML = `
-                                    <div><img src="http://127.0.0.1:8000/${
-                                    product.image
-                                    }"/></div>
-                                    <div>${product.name}</div>
-                                    <div>$${product.price.toLocaleString()}</div>
-                                    <div>
-                                        <button onclick="changeQuantity(${item.id}, ${
-                                    item.quantity - 1
-                                    })">-</button>
-                                        <div class="count">${item.quantity}</div>
-                                        <button onclick="changeQuantity(${item.id}, ${
-                                    item.quantity + 1
-                                    })">+</button>
-                                    </div>`;
-                                listCard.appendChild(newDiv);
-                            }
-                        }
-                    );
-                }
-                initApp();
-            })
-            .catch((error) => {
-                console.error("Error fetching products:", error);
-            });
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/products/list/?format=json");
+            const data = await response.json();
+            products = data;
+            initApp();
+            console.log("data:", data.name);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
     };
+
     fetchProducts();
-    
+
     function initApp() {
-        products.forEach((value, key) => {
+        products.forEach((product) => {
             let newDiv = document.createElement("div");
             newDiv.classList.add("item");
             newDiv.innerHTML = `
-                <img src="http://127.0.0.1:8000/${value.image}">
-                <div class="title">${value.name}</div>
-                <div class="price">$${value.price.toLocaleString()}</div>
-                <button onclick="addToCard(${value.id})">Add To Card</button>`;
+                <img src="http://127.0.0.1:8000/${product.image}">
+                <div class="title">${product.name}</div>
+                <div class="price">$${product.price.toLocaleString()}</div>
+                <button data-id="${product.id}" class="addToCart">Add To Cart</button>`;
             list.appendChild(newDiv);
         });
+
+        document.querySelectorAll('.addToCart').forEach(button => {
+            button.addEventListener('click', addToCart);
+        });
     }
-    
-    function addToCard(id) {
-        if (!listCards.find((item) => item.id == id)) {
-            // copy product form list to list card
-            let productItem = products.find((product) => product.id == id);
-            productItem["quantity"] = 1;
-            listCards.push(productItem);
+
+    function addToCart(event) {
+        let productId = parseInt(event.target.dataset.id);
+        let existingItem = listCards.find((item) => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            listCards.push({ id: productId, quantity: 1 });
         }
-        if (!localStorage.getItem("shoppingCart")) {
-            localStorage.setItem(
-                "shoppingCart",
-                JSON.stringify([{ id, quantity: 1 }])
-            );
-        }
-        if (JSON.parse(localStorage.getItem("shoppingCart"))) {
-            if (JSON.parse(localStorage.getItem("shoppingCart")).length > 0) {
-                if (
-                    !JSON.parse(localStorage.getItem("shoppingCart")).find(
-                        (item) => item.id == id
-                    )
-                ) {
-                    localStorage.setItem(
-                        "shoppingCart",
-                        JSON.stringify([
-                            ...JSON.parse(localStorage.getItem("shoppingCart")),
-                            { id, quantity: 1 },
-                        ])
-                    );
-                }
-            } else {
-                localStorage.setItem(
-                    "shoppingCart",
-                    JSON.stringify([{ id, quantity: 1 }])
-                );
-            }
-        }
-        reloadCard();
+        updateCart();
     }
-    
-    function reloadCard() {
+
+    function updateCart() {
         listCard.innerHTML = "";
-        let count = 0;
         let totalPrice = 0;
         listCards.forEach((value) => {
-            totalPrice = totalPrice + value.price;
-            count = count + value.quantity;
-            if (value != null) {
+            let product = products.find((item) => item.id === value.id);
+            if (product) {
+                totalPrice += product.price * value.quantity;
                 let newDiv = document.createElement("li");
                 newDiv.innerHTML = `
-                    <div><img src="http://127.0.0.1:8000/${value.image}"/></div>
-                    <div>${value.name}</div>
-                    <div>$${value.price.toLocaleString()}</div>
+                    <div><img src="http://127.0.0.1:8000/${product.image}"/></div>
+                    <div>${product.name}</div>
+                    <div>$${(product.price * value.quantity).toLocaleString()}</div>
                     <div>
-                        <button onclick="changeQuantity(${value.id}, ${
-                    value.quantity - 1
-                    })">-</button>
+                        <button onclick="changeQuantity(${value.id}, ${value.quantity - 1})">-</button>
                         <div class="count">${value.quantity}</div>
-                        <button onclick="changeQuantity(${value.id}, ${
-                    value.quantity + 1
-                    })">+</button>
+                        <button onclick="changeQuantity(${value.id}, ${value.quantity + 1})">+</button>
                     </div>`;
                 listCard.appendChild(newDiv);
             }
         });
         total.innerText = totalPrice.toLocaleString();
-        quantity.innerText = count;
+        updateBadge();
+        updateLocalStorage(); // Update local storage after updating the cart
     }
-    
+
     function changeQuantity(id, quantity) {
-        console.log(listCards);
-        if (quantity == 0) {
+        if (quantity === 0) {
             listCards = listCards.filter((item) => item.id != id);
-            newLocalStorage = [
-                ...JSON.parse(localStorage.getItem("shoppingCart")).filter(
-                    (item) => item.id != id
-                ),
-            ];
-            if (newLocalStorage.length == 0) {
-                localStorage.removeItem("shoppingCart");
-            } else {
-                localStorage.setItem(
-                    "shoppingCart",
-                    JSON.stringify(newLocalStorage)
-                );
-            }
         } else {
-            listCards[listCards.findIndex((item) => item.id == id)].quantity =
-                Number(quantity);
-            listCards[listCards.findIndex((item) => item.id == id)].price =
-                Number(quantity) * products.find((item) => item.id == id).price;
-            if (!localStorage.getItem("shoppingCart")) {
-                localStorage.setItem(
-                    "shoppingCart",
-                    JSON.stringify([{ id, quantity: quantity }])
-                );
-            } else {
-                localStorage.setItem(
-                    "shoppingCart",
-                    JSON.stringify([
-                        ...JSON.parse(localStorage.getItem("shoppingCart")).filter(
-                            (item) => item.id != id
-                        ),
-                        { id, quantity: quantity },
-                    ])
-                );
-            }
+            let itemIndex = listCards.findIndex((item) => item.id === id);
+            listCards[itemIndex].quantity = Number(quantity);
         }
-        reloadCard();
+        updateCart();
     }
-    
-    // Checkout Functionality
-    let checkOutButton = document.querySelector('.checkOut');
+
+    function updateBadge() {
+        let totalQuantity = listCards.reduce((total, item) => total + item.quantity, 0);
+        quantity.innerText = totalQuantity;
+    }
+
+    // Update local storage with the current cart items
+    function updateLocalStorage() {
+        localStorage.setItem('cartItems', JSON.stringify(listCards));
+    }
+
+    // Checkout function triggered by the total button
+    total.addEventListener('click', checkout);
 
     async function checkout() {
-        if (localStorage.getItem('shoppingCart') && JSON.parse(localStorage.getItem('shoppingCart')).length > 0) {
-            // Retrieve the CSRF token from the cookie
-            const csrftoken = getCookie('csrftoken');
+        // Redirect to the user's profile page
+        window.location.href = 'http://127.0.0.1:8000/profile/';
     
-            await fetch("http://127.0.0.1:8000/orders/api/order-item-creator/", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Include the CSRF token in the headers
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify(JSON.parse(localStorage.getItem('shoppingCart')))
-            });
-        }
+
     }
-    
-    // Function to retrieve the CSRF token from the cookie
+
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -760,9 +693,18 @@
         }
         return cookieValue;
     }
-    
-    checkOutButton.addEventListener('click', checkout);
-    
+
+    // Check if there are any items saved in local storage when the DOM is loaded
+    const storedCartItems = localStorage.getItem('cartItems');
+    if (storedCartItems) {
+        // Parse the JSON string and initialize the listCards array
+        listCards = JSON.parse(storedCartItems);
+
+        // Update the cart UI using the retrieved items
+        updateCart();
+    }
+});
+
     </script>
 </body>
 </html>
