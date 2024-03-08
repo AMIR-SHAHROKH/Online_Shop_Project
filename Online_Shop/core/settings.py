@@ -35,18 +35,25 @@ ALLOWED_HOSTS = []
 
 APPEND_SLASH = True
 
+# DEBUG = env('DEBUG') == 'True'
+# SECRET_KEY = env('SECRET_KEY')
+# DATABASE_URL = env('DATABASE_URL')
+# EMAIL_HOST = env('EMAIL_HOST')
+# EMAIL_PORT = env('EMAIL_PORT')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Your SMTP server hostname
-EMAIL_PORT = 465  # Your SMTP server port (usually 25, 465, or 587)
-EMAIL_HOST_USER = 'amirshahrokh82@yahoo.com'  # Your email username
-EMAIL_HOST_PASSWORD = 'Amir82'  # Your email password
-DEFAULT_FROM_EMAIL = 'amirshahrokh82@yahoo.com'  # The default from email address for sending emails
+EMAIL_PORT = 25  # Your SMTP server port (usually 25, 465, or 587)
+EMAIL_HOST_USER = 'amirmohammadshahrokh81@gmail.com'  # Your email username
+EMAIL_HOST_PASSWORD = 'yuxvntjpqgglzfti'  # Your email password
+DEFAULT_FROM_EMAIL = 'AMIR SHAHROKH'  # The default from email address for sending emails
 EMAIL_USE_TLS = True  # Enable TLS encryption
-# settings.py
 
 
 
-APPEND_SLASH = False
+
+APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
