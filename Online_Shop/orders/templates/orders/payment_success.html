@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Confirmation</title>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    padding: 20px;
+    border-radius: 10px;
+    height: 50vh;
+    width: 50vh;
+    align-items: center;
+    text-align: center;
+}
+
+.payment-confirm {
+    text-align: center;
+}
+
+.tick-icon {
+    width: 50px;
+}
+
+.payment-status {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.final-amount {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+}
+
+/* Class for paid status */
+.paid {
+    background-color: greenyellow; /* Green background color */
+}
+
+/* Class for not paid status */
+.not-paid {
+    background-color: grey; /* Grey background color */
+}
+</style>
+</head>
+<body>
+
+    <div class="container {% if data.payment_status == 'paid' %} paid {% else %} not-paid {% endif %}">
+        <div class="payment-confirm">
+            {% if payment_status == "paid" %}
+            <img src="/media/orders/images/Success.png" alt="Success Icon" class="tick-icon">
+            {% elif payment_status == "pending" %}
+            <img src="/media/orders/images/Failed.png" alt="Failure Icon" class="tick-icon">
+            {% endif %}
+            <div id="final-amounts">
+                <!-- Data will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch data from the API when the page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchFinalAmounts();
+        });
+
+        function fetchFinalAmounts() {
+            // Extract the order ID from the context
+            var orderId = "{{ order_id }}";
+
+            // Define the URL of the API including the order ID
+            var apiUrl = 'http://127.0.0.1:8000/orders/api/final_amount/' + orderId;
+
+            // Send a GET request to the API using Fetch API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the data
+                    displayFinalAmounts(data);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function displayFinalAmounts(data) {
+            // Get the element where data will be displayed
+            var finalAmountsDiv = document.getElementById('final-amounts');
+
+            // Clear the contents of the div
+            finalAmountsDiv.innerHTML = '';
+
+            // Create HTML elements to display the data
+            var finalAmountElement = document.createElement('div');
+            finalAmountElement.innerHTML = `
+                <p>Order ID: ${data.order_id}</p>
+                <p>Discounted Amount: ${data.discounted_amount}</p>
+                <p>Payment Status: ${data.payment_status}</p>
+            `;
+
+            // Append the final amount element to the container
+            finalAmountsDiv.appendChild(finalAmountElement);
+        }
+    </script>
+</body>
+</html>

@@ -5,11 +5,12 @@ from .models import Order
 from .serializers import OrderSerializer
 from django.views.generic import TemplateView
 from rest_framework import generics, status
+from django.http import Http404
 from .models import OrderItem
 from products.models import Product
 from orders.models import Order,FinalAmount,Discount
 from django.urls import reverse
-from .serializers import OrderItemSerializer,DiscountSerializer
+from .serializers import OrderItemSerializer,DiscountSerializer,FinalAmountSerializer
 from django.core.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from django.core.exceptions import ObjectDoesNotExist
@@ -19,8 +20,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 class OrderListView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        orders = Order.objects.all()
+        orders = Order.objects.fliter( user = request.user)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
@@ -29,6 +31,25 @@ class OrderDetailView(APIView):
         order = get_object_or_404(Order, id=order_id)
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+class FinalAmountAPIView(APIView):
+    def get(self, request, order_id):
+        order = Order.objects.filter(id=order_id).first()
+        if not order:
+            raise Http404("Order does not exist")
+        
+        final_amount = FinalAmount.objects.filter(order=order).first()
+        if not final_amount:
+            raise Http404("Final amount not found for this order")
+
+        serializer = FinalAmountSerializer(final_amount)
+        return Response(serializer.data)
+
+class PaymentView(APIView):
+    template_name = 'orders/payment_success.html'
+
+    def get(self, request, order_id):
+        return render(request, self.template_name, {'order_id': order_id })
 
 class OrderListPageView(TemplateView):
     template_name = 'orders/order_list.html'
@@ -71,10 +92,14 @@ class OrderItemCreatorAPIView(APIView):
             return redirect(reverse('users:account'))
 
         data = request.data
-        print(data)
-        created_order_items = []
-        total_amount = 0
+        # data = [
+            # {"id": 1, "quantity": 3},
+            # {"id": 3, "quantity": 1},
+        # ]  # Get order items from request data
 
+        created_order_items_data = []
+        print(data)
+        total_amount = 0
         order = Order.objects.create(user=request.user)
 
         for item_data in data:
@@ -99,13 +124,16 @@ class OrderItemCreatorAPIView(APIView):
 
             # Calculate total amount after applying the updated unit price
             total_amount += order_item.calculate_total_price()
-            created_order_items.append(order_item)
+
+            # Serialize the created order item
+            order_item_serializer = OrderItemSerializer(order_item)
+            created_order_items_data.append(order_item_serializer.data)
 
         # Update total amount for the order
         order.total_amount = total_amount
         order.save()
 
-        return Response({'message': 'Order items created successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Order items created successfully', 'order_items': created_order_items_data}, status=status.HTTP_201_CREATED)
 
 class ApplyDiscountView(View):
     def get(self, request, order_id):

@@ -18,10 +18,6 @@ class ProductDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['name', 'price', 'discount','image','description']
-class FinalAmountSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FinalAmount
-        fields = ['discounted_amount']
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductDetailsSerializer()
@@ -67,3 +63,10 @@ class OrderSerializer(serializers.ModelSerializer):
         for order_item_data in order_items_data:
             OrderItem.objects.create(order=instance, **order_item_data)
         return instance
+class FinalAmountSerializer(serializers.ModelSerializer):
+    # Use a read-only field to represent the order's ID
+    order_id = serializers.PrimaryKeyRelatedField(source='order', read_only=True)
+
+    class Meta:
+        model = FinalAmount
+        fields = ['discounted_amount', 'payment_status', 'order_id']
