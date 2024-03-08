@@ -209,6 +209,15 @@
                     });
                 }
             });
+            $(document).ready(function() {
+                $('#finalize-btn').click(function() {
+                    var orderID = $('#order-id').text();
+                    // Construct the URL for the new page
+                    var redirectURL = `http://127.0.0.1:8000/orders/payment/${orderID}/`; // Modify the URL structure as needed
+                    // Redirect the user to the new page
+                    window.location.href = redirectURL;
+                });
+            });
         });
     </script>
 </body>

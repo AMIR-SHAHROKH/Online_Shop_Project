@@ -90,7 +90,6 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
@@ -98,6 +97,7 @@
     <div class="container">
         <h2>Sign Up</h2>
         <form method="post">
+            {% csrf_token %}
             {% if messages %}
     <ul class="messages">
         {% for message in messages %}
@@ -105,7 +105,6 @@
         {% endfor %}
     </ul>
         {% endif %}
-            {% csrf_token %}
             <!-- User Form Fields -->
             <label for="username">Username:</label>
             {{ user_form.username }}
