@@ -1,0 +1,6 @@
+# you should fork this from their github: mellipayamak
+Pillow
+Django
+redis
+celery
+psychopg2
