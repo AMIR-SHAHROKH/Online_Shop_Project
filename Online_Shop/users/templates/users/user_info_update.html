@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>User Profile</title>
+    <style>
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #6fe3ff;
+}
+
+.container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 90%;
+    margin: auto;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#user-info, #address-list, #update-form {
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Cyan Background for Update Form */
+#update-form {
+    background-color: #00bcd4;
+    display: none;
+}
+
+/* Responsive Styles */
+@media only screen and (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    input {
+        padding: 8px;
+    }
+
+    button {
+        padding: 10px;
+    }
+}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a> <!-- Search form -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>User Profile</h2>
+        <div id="user-info">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+        </div>
+        <h3>Update Information</h3>
+        <button id="toggle-update">Update Information</button>
+
+        <form id="update-form" style="display: none; margin-top: 15px; background-color: #ffc107;">
+            {% csrf_token %}
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}"><br>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="{{ user.username }}"><br>
+
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}"><br>
+
+            <!-- Add fields for address -->
+            <h3>Add New Address</h3>
+                <label for="new_street">Street:</label>
+                <input type="text" id="new_street" name="new_street"><br>
+        
+                <label for="new_city">City:</label>
+                <input type="text" id="new_city" name="new_city"><br>
+        
+                <label for="new_state">State:</label>
+                <input type="text" id="new_state" name="new_state"><br>
+        
+                <label for="new_postal_code">Postal Code:</label>
+                <input type="text" id="new_postal_code" name="new_postal_code"><br>
+        
+                <label for="new_country">Country:</label>
+                <input type="text" id="new_country" name="new_country"><br>
+        
+            <!-- Add more fields as needed -->
+
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#toggle-update').click(function() {
+                $('#update-form').toggle();
+            });
+        
+            $('#update-form').submit(function(event) {
+                event.preventDefault();
+                var formData = $(this).serializeArray(); // Serialize form data as array
+        
+                // Additional serialization for address fields
+                var addressFields = $('input[name^="addresses"]');
+                addressFields.each(function(index) {
+                    formData.push({
+                        name: $(this).attr('name'),
+                        value: $(this).val()
+                    });
+                });
+        
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://127.0.0.1:8000/profile/user-info/', // Update the URL as per your project's configuration
+                    data: formData,
+                    success: function(response) {
+                        alert('User information updated successfully!');
+                        // You can update the DOM or redirect here if needed
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        alert('Error updating user information. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

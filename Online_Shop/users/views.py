@@ -28,8 +28,14 @@ from orders.models import Order
 from django.conf import settings
 import redis
 from django.contrib.auth import authenticate, logout , login
-from django.core.mail import send_mail
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import UserSerializer,AddressSerializer
 from users.tasks import send_email_task
+from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework import generics
+
 # Get the custom User model
 
 redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -258,3 +264,76 @@ class AddressView(View):
             user_addresses = None
         print(user_addresses)
         return render(request, 'users/address.html', {'user_addresses': user_addresses})
+
+
+class UserInfoAPIView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = self.get_object()
+        addresses = AddressSerializer(user.addresses.all(), many=True).data
+        return render(request, 'user_detail.html', {'user': user, 'addresses': addresses})
+
+    def post(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            # Process new address data and create a new address
+            new_address_data = request.data.get('new_address', {})
+            new_address_serializer = AddressSerializer(data=new_address_data)
+            if new_address_serializer.is_valid():
+                new_address_serializer.save(user=user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(new_address_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserInfoView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        addresses = user.addresses.all()
+        context = {
+            'user': user,
+            'addresses': addresses
+        }
+        return render(request, 'users/user_info_update.html', context)
+
+    def post(self, request):
+        user = request.user
+        # Process the form data
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        phone_number = request.POST.get('phone_number')
+
+        # Check if the new phone number is unique
+        if User.objects.exclude(id=user.id).filter(phone_number=phone_number).exists():
+            return JsonResponse({'status': 'error', 'message': 'Phone number is not unique.'}, status=400)
+
+        # Update user information
+        user.email = email
+        user.username = username
+        user.phone_number = phone_number
+        user.save()
+
+        # Update or create addresses for the current user
+        new_street = request.POST.get('new_street')
+        new_city = request.POST.get('new_city')
+        new_state = request.POST.get('new_state')
+        new_postal_code = request.POST.get('new_postal_code')
+        new_country = request.POST.get('new_country')
+
+        # Create a new address associated with the current user
+        new_address = Address.objects.create(
+            user=user,
+            street=new_street,
+            city=new_city,
+            state=new_state,
+            postal_code=new_postal_code,
+            country=new_country
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'User information updated successfully!'})

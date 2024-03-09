@@ -125,7 +125,7 @@
                                         </div>
                                     </div>
                                     <div class="list-group list-group-flush text-center mt-4" style="border: 1px solid black;">
-                                        <a href="#" class="list-group-item list-group-item-action border-0 active">
+                                        <a href="{% url 'users:user-info' %}" class="list-group-item list-group-item-action border-0 active">
                                             Profile Informaton
                                         </a>
                                         <a href="{% url 'users:user-orders' username=user.username %}" class="list-group-item list-group-item-action border-0">Orders</a>

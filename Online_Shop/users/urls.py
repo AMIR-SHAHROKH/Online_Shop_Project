@@ -12,6 +12,8 @@ urlpatterns = [
     path('<str:username>', views.UserProfileView.as_view(), name='profile'),
     path('cart/', views.ShoppingCartView.as_view(), name='shopping_cart'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('api/user-info/', views.UserInfoAPIView.as_view(), name='user-info-api'),
+    path('user-info/', views.UserInfoView.as_view(), name='user-info'),
     path('addresses/', views.AddressView.as_view(), name='addresses'),
     path('orders/<str:username>', views.OrdersView.as_view(), name='user-orders')
     
