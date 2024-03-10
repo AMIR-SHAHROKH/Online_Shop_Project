@@ -17,6 +17,8 @@ secret_key.txt
 # Media files
 media/
 
+node_modules/
+
 melipayamak/
 
 # Database
@@ -24,6 +26,10 @@ db.sqlite3
 # Global gitignore
 *.sqlite3
 
+package-lock.json
+package.json
+*.js
+.js
 # Static files
 static/
 
