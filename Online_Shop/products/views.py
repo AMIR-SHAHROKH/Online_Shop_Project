@@ -14,6 +14,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.urls import reverse
+from django.core.cache import cache
 
 
 class ProductList(APIView):
@@ -37,9 +38,20 @@ class ProductDetailAPIView(APIView):
 
 class ProductslistAPIView(APIView):
     def get(self, request, format=None):
+        # Check if data exists in cache
+        cached_data = cache.get('products_data')
+        if cached_data:
+            return Response(cached_data)
+
+        # Data is not cached, retrieve from the database
         products = Product.objects.all()
         serializer = CustomProductSerializer(products, many=True)
-        return Response(serializer.data)
+        data = serializer.data
+
+        # Cache the data for future requests
+        cache.set('products_data', data, timeout=120)  # Cache for 2 minutes
+
+        return Response(data)
 
 
 
