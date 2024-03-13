@@ -87,10 +87,14 @@ class UserProfile(models.Model):
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
     street = models.CharField(max_length=255)
-    user = models.ForeignKey(User ,on_delete=models.CASCADE, related_name = "addresses")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     postal_code = models.CharField(max_length=20)
     country = models.CharField(max_length=255)
+    is_shipping_address = models.BooleanField(default=False)
 
+    def __str__(self):
+        shipping_status = "Yes" if self.is_shipping_address else "No"
+        return f"{self.street}, {self.city}, {self.state}, {self.country} - Shipping Address: {shipping_status}"
 
