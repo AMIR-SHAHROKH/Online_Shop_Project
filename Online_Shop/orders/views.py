@@ -6,7 +6,7 @@ from .serializers import OrderSerializer
 from django.views.generic import TemplateView
 from rest_framework import generics, status
 from django.http import Http404
-from .models import OrderItem
+from .models import OrderItem , update_order_payment_status
 from products.models import Product
 from orders.models import Order,FinalAmount,Discount
 from django.urls import reverse
@@ -22,7 +22,7 @@ import json
 class OrderListView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        orders = Order.objects.fliter( user = request.user)
+        orders = Order.objects.filter(user=request.user)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
 
@@ -53,6 +53,9 @@ class PaymentView(APIView):
 
 class OrderListPageView(TemplateView):
     template_name = 'orders/order_list.html'
+
+class AddressCheckView(TemplateView):
+    template_name = 'orders/check_address.html'
 
 class OrderDetailPageView(TemplateView):
     template_name = 'orders/order_detail.html'
@@ -176,12 +179,14 @@ class ApplyDiscountView(View):
                 return JsonResponse({'error': str(e)}, status=500)
 
         elif action == "finalize_payment":
-            # Add logic for finalizing payment here
-            # For example, you could mark the order as paid or perform any necessary actions.
+            # Mark the final amount instance as paid
+            final_amount_instance.payment_status = FinalAmount.PAID
+            final_amount_instance.save()
             return JsonResponse({'success': 'Payment finalized successfully.'})
 
         else:
             return JsonResponse({'error': 'Invalid action.'}, status=400)
+
 
 
             
