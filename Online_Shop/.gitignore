@@ -26,6 +26,8 @@ db.sqlite3
 # Global gitignore
 *.sqlite3
 
+Dockerfile
+
 package-lock.json
 package.json
 *.js

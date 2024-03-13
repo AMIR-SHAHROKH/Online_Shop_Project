@@ -4,3 +4,4 @@ Django
 redis
 celery
 psychopg2
+selenium
