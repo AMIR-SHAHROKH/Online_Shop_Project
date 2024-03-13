@@ -265,7 +265,37 @@ class AddressView(View):
         print(user_addresses)
         return render(request, 'users/address.html', {'user_addresses': user_addresses})
 
+class ShippingAddressCheckView(APIView):
+    def get(self, request):
+        # Retrieve the user's shipping address
+        shipping_address = Address.objects.filter(user=request.user, is_shipping_address=True).first()
 
+        if shipping_address:
+            # Serialize the shipping address
+            serializer = AddressSerializer(shipping_address)
+            return Response(serializer.data)
+        else:
+            # Return an empty response if there is no shipping address
+            return Response({})
+        
+class ShippingAddressView(APIView):
+    def get(self, request):
+        addresses = Address.objects.filter(user=request.user)
+        serializer = AddressSerializer(addresses, many=True)
+        return Response(serializer.data)
+
+    def put(self, request):
+        address_id = request.data.get('address_id')
+        try:
+            address = Address.objects.get(user=request.user, address_id=address_id)
+            # Set the selected address as the shipping address
+            Address.objects.filter(user=request.user).update(is_shipping_address=False)
+            address.is_shipping_address = True
+            address.save()
+            return Response(status=status.HTTP_200_OK)
+        except Address.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
 class UserInfoAPIView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer

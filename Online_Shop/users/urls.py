@@ -15,6 +15,7 @@ urlpatterns = [
     path('api/user-info/', views.UserInfoAPIView.as_view(), name='user-info-api'),
     path('user-info/', views.UserInfoView.as_view(), name='user-info'),
     path('addresses/', views.AddressView.as_view(), name='addresses'),
-    path('orders/<str:username>', views.OrdersView.as_view(), name='user-orders')
-    
+    path('orders/<str:username>', views.OrdersView.as_view(), name='user-orders'),
+    path('api/addresses/', views.ShippingAddressView.as_view(), name='addresses-api'),
+    path('api/address-check/', views.ShippingAddressCheckView.as_view(), name='addresses-check-api'),
 ]
