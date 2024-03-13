@@ -72,7 +72,6 @@ class FinalAmount(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='final_amount')
     discounted_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     payment_status = models.CharField(max_length=10, choices=PAYMENT_STATUS_CHOICES, default=PENDING)
-
     def __str__(self):
         return f"Final Amount - Order #{self.order.id}"
     
@@ -126,7 +125,7 @@ def calculate_discounted_amount(sender, instance, created, **kwargs):
 
         # Modify the instance directly without saving it again
         FinalAmount.objects.filter(pk=instance.pk).update(discounted_amount=instance.discounted_amount)
-@receiver(post_save, sender=FinalAmount)
+# @receiver(post_save, sender=FinalAmount)
 def update_order_payment_status(sender, instance, created, **kwargs):
     # Check if the payment status has been updated to 'paid'
     if instance.payment_status == FinalAmount.PAID:
