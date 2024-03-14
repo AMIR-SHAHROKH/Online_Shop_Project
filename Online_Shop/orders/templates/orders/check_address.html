@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Address Data</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #6fe3ff;
+        }
+        
+        .container {
+            background-color: #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px auto; /* Center the container and add margin from top */
+            max-width: 800px; /* Limit container width */
+        }
+        
+        .address-profile {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .address-item {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .selectShippingAddress {
+            background-color: #ffc107; /* Default background color */
+            color: #000; /* Default text color */
+            border: none;
+            border-radius: 20px; /* Rounded corners */
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth transition on hover */
+            margin-top: 10px;
+        }
+        
+        .selectShippingAddress:hover {
+            background-color: #ffdb4d; /* Change background color on hover */
+        }
+        
+        strong {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Your Shipping Address</h1>
+        <div id="shipping-address"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.4/axios.min.js"></script>
+    <script>
+        // Make a GET request to the ShippingAddressView API endpoint
+        axios.get('http://127.0.0.1:8000/profile/api/address-check/')
+            .then(function(response) {
+                // Handle successful response
+                const addressData = response.data;
+                const addressElement = document.getElementById('shipping-address');
+
+                // Check if address data is available
+                if (addressData.address_id === undefined ||
+                    addressData.street === undefined ||
+                    addressData.city === undefined ||
+                    addressData.state === undefined ||
+                    addressData.postal_code === undefined ||
+                    addressData.country === undefined) {
+                    // If any field is undefined, display a message and a button to redirect
+                    addressElement.innerHTML = `
+                        <div class="address-profile">
+                            <p>You do not have any selected shipping address.</p>
+                            <button class="selectShippingAddress" onclick="redirectToAnotherPage()">Lets Fix That ;)</button>
+                        </div>
+                    `;
+                } else {
+                    // If all fields are defined, render the address details and buttons
+                    const addressHTML = `
+                        <div class="address-profile">
+                            <p>Street: ${addressData.street}</p>
+                            <p>City: ${addressData.city}</p>
+                            <p>State: ${addressData.state}</p>
+                            <p>Postal Code: ${addressData.postal_code}</p>
+                            <p>Country: ${addressData.country}</p>
+                            <button class="selectShippingAddress" onclick="changeShippingAddress()">Change Address</button>
+                            <button class="selectShippingAddress" onclick="continueWithAddress()">Continue with this Address</button>
+                        </div>
+                    `;
+                    addressElement.innerHTML = addressHTML;
+                }
+            })
+            .catch(function(error) {
+                // Handle errors
+                console.error('Error fetching shipping address:', error);
+            });
+
+        function redirectToAnotherPage() {
+            // Replace 'destination_url' with the URL you want to redirect the user to
+            window.location.href = 'http://127.0.0.1:8000/profile/addresses/';
+        }
+
+        function changeShippingAddress() {
+            // Replace 'change_address_url' with the URL for changing the shipping address
+            window.location.href = 'http://127.0.0.1:8000/profile/addresses/';
+        }
+
+        function continueWithAddress() {
+            // Get the referrer URL
+            var referrerUrl = document.referrer;
+            // Redirect to the referrer URL
+            window.location.href = referrerUrl;
+        }
+        
+    </script>
+</body>
+</html>
+

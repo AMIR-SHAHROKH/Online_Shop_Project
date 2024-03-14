@@ -76,7 +76,6 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
                 <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
             </ul>
         </div>
     </nav>
@@ -97,6 +96,8 @@
             {{ form.otp }}
             <p> </p>
             <input type="submit" class="btn-primary" value="Submit" name="otp_form">
+            <p>Countdown Timer</p>
+            <p id="timer">02:00</p>
         </form>
 
         <!-- Sign Up and Login Links -->
@@ -104,6 +105,38 @@
             <p>Haven't got your OTP message yet? maybe give it another try <a href="{% url 'users:log in with otp' %}" style="color: blue;">Phone number otp</a></p>
         </div>
     </div>
+    <script>
+        // Set the timer duration in seconds
+        var duration =119; // 2 minutes
+        var display = document.getElementById('timer');
+
+        startTimer(duration, display);
+
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            var intervalId = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(intervalId);
+                    display.textContent = "Time's up!";
+                    
+                    // Show an alert message when the timer runs out
+                    alert("Your OTP code time ran out!");
+
+                    // Redirect to another page after the user clicks "OK" on the alert
+                    window.location.href = "http://127.0.0.1:8000/profile/login-otp/";
+                }
+            }, 1000);
+        }
+    </script>
+
 </body>
 
 </html>

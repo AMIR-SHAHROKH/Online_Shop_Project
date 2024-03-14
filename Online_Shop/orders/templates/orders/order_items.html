@@ -14,7 +14,7 @@
         .center-container {
             background-color: #6fe3ff;
             display: flex;
-            height: 95vh ;
+            height: 95vh;
             align-items: center;
             flex-direction: column;
             text-align: center;
@@ -37,7 +37,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -95,6 +95,20 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row mt-4" id="shippingAddressSection">
+                <div class="col-lg-8" style="text-align: center;">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Shipping Address</h5>
+                            <p class="card-text" id="shippingAddress"></p>
+                            <button class="btn btn-primary" onclick="changeAddress()">Change Address</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 
@@ -102,14 +116,14 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: 'http://127.0.0.1:8000/orders/api/order-items/{{ order_id }}/', // Replace with your API endpoint
+                url: 'http://127.0.0.1:8000/orders/api/order-items/{{ order_id }}/',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
                     var orderItems = data.order_items;
                     var totalAmount = data.total_amount;
                     var paymentStatus = data.payment_status;
-        
+
                     orderItems.forEach(function (item) {
                         var product = item.product;
                         var productName = product.name;
@@ -117,9 +131,9 @@
                         var productQuantity = item.quantity;
                         var productDescription = product.description;
                         var productImage = product.image;
-        
+
                         var totalPrice = productPrice * productQuantity;
-        
+
                         var productHTML = '<tr>';
                         productHTML += '<td><img src="' + productImage + '" alt="' + productName +
                             '" class="product-image"></td>';
@@ -128,13 +142,13 @@
                         productHTML += '<td>$' + productPrice.toFixed(2) + '</td>';
                         productHTML += '<td>$' + totalPrice.toFixed(2) + '</td>';
                         productHTML += '</tr>';
-        
+
                         $('#productDetails').append(productHTML);
                     });
-        
+
                     $('#paymentStatus').text(paymentStatus);
                     $('#totalAmount').text('$' + totalAmount.toFixed(2));
-        
+
                     if (paymentStatus === 'paid') {
                         $('.complete-payment-button').hide();
                         $('.status-message').text('This order is being shipped ASAP');
@@ -145,15 +159,50 @@
                 }
             });
         });
+
+        function checkShippingAddress() {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/profile/api/address-check/',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data && data.street && data.city && data.state && data.postal_code && data.country) {
+                        var addressText = data.street + ', ' + data.city + ', ' + data.state + ', ' +
+                            data.postal_code + ', ' + data.country;
+                        $('#shippingAddress').text(addressText); // Set shipping address text in the container
+                        $('.complete-payment-button').show(); // Show the complete payment button
+                    } else {
+                        $('#shippingAddress').empty(); // Clear any existing address
+                        $('#shippingAddress').append('<p><b>No selected shipping address</b></p>');
+                        $('.complete-payment-button').hide(); // Hide the complete payment button
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error:', errorThrown);
+                }
+            });
+        }
         
+        
+        // Call the function when the page is ready
+        $(document).ready(function () {
+            checkShippingAddress();
+        });
+
+        // Function to redirect to the change address page
+        function changeAddress() {
+            // Replace 'your-change-address-url' with the actual URL for changing the address
+            window.location.href = 'http://127.0.0.1:8000/orders/address';
+        }
+
         function completePayment() {
             // Extract the order ID from the current URL
             var urlParts = window.location.href.split('/');
             var orderId = urlParts[urlParts.length - 2]; // This assumes the order ID is the last part of the URL path
-        
+
             // Construct the URL for the complete payment page
             var redirectUrl = 'http://127.0.0.1:8000/orders/apply-discount/' + orderId + '/';
-        
+
             // Redirect to the complete payment page with the order ID
             window.location.href = redirectUrl;
         }
@@ -161,7 +210,3 @@
 </body>
 
 </html>
-
-
-
-

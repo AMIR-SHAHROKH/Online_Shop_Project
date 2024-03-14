@@ -260,7 +260,7 @@
       }
       .list .item {
         text-align: center;
-        background-color: #dce0e1;
+        background-color: white;
         padding: 20px;
         box-shadow: 0 50px 50px #757676;
         letter-spacing: 1px;
@@ -365,9 +365,14 @@
         color: white;
         margin: auto;
       }
+      .img {
+
+      }
     </style>
 </head>
-<body>
+<body >
+
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">{{ user.email }}</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -381,15 +386,17 @@
         </ul>
         <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a>     <!-- Search form -->
 </nav>
+<section>
     <!-- Carousel of project pictures -->
     <div id="carouselExample" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             <!-- Add your project pictures here -->
             <div class="carousel-item active">
-                <img src="https://via.placeholder.com/1200x400.png?text=Project+1" class="d-block w-100" alt="Project 1">
+                <img src="../../media/products/images/MainPic.jpg" 
+                class="d-block w-100" alt="Project 1">
             </div>
             <div class="carousel-item">
-                <img src="https://via.placeholder.com/1200x400.png?text=Project+2" class="d-block w-100" alt="Project 2">
+                <img src="../../media/products/images/online-shoppingdBig.jpg"   class="d-block w-100" alt="Project 2">
             </div>
             <!-- Add more carousel items as needed -->
         </div>
@@ -427,13 +434,15 @@
                 </div>
             {% endfor %}
         </div>
-    {% endfor %} {% endcomment %}
+    {% endfor %} {% endcomment %}\
+    <section>
     <div id="shopping-cart">
         <i class="fas fa-shopping-cart"><img src="../../media/shopping-cart.png" alt="Icon description" style="width: 50px;"></i>
         <span class="notification-badge">0</span>
     </div>
-
-<section style="margin: 10vh;">
+</section>
+<section style="margin-bottom: 10vh;">
+<div>
     <div class="container1">
         <div class="list"></div>
     </div>
@@ -441,14 +450,14 @@
         <h1>Cart</h1>
         <ul class="listCard"></ul>
         <div class="checkOut">
-            <a id="checkout-link" onclick="checkout()">
-                <a href="{% url 'users:user-orders' username=user.username %}"><div class="total">0</div></a>
+            <a id="checkout-link"   onclick="checkout()" href="http://127.0.0.1:8000/profile/orders/{{ request.user.username }}">
+                <div class="total">0</div>
             </a>
             <div class="closeShopping">Close</div>
         </div>
     </div>
-</section>
-</section>
+</div>
+
     </section>        
     <footer>
         <div class="footer-content" style="justify-content: space-between;">
@@ -463,215 +472,153 @@
                 <ul>
                     <li><i class="fas fa-phone"></i> Phone: 123-456-7890</li>
                     <li><i class="fab fa-whatsapp"></i> WhatsApp: 123-456-7890</li>
-                    <li><i class="fab fa-telegram"></i> Telegram: @yourtelegramusername</li>
+                    <li><i class="fab fa-telegram"></i> <a href="https://t.me/AMIRSHAH">Telegram</a></li>
                     <li><i class="fab fa-instagram"></i> Instagram: @yourinstagramusername</li>
                     <!-- Add more contact information if needed -->
                 </ul>
             </div>
         </div>
     </footer>
-
+</section>
     <footer class="text-center py-3">
         <p>&copy; 2024 Your Online Shop. All rights reserved.</p>
     </footer>
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-        {% comment %} const addButtons = document.querySelectorAll('.add-button');
-        const incrementButtons = document.querySelectorAll('.increment');
-        const decrementButtons = document.querySelectorAll('.decrement');
-        const quantityInputs = document.querySelectorAll('.quantity-input');
-        const quantityWrappers = document.querySelectorAll('.quantity-wrapper');
-        const notificationBadge = document.querySelector('.notification-badge');
-        
-        // Initialize notification count
-        let notificationCount = 0;
-        notificationBadge.textContent = notificationCount;
-        
-        // Event listener for Add to Cart buttons and increment/decrement buttons
-        for (let i = 0; i < addButtons.length; i++) {
-            addButtons[i].addEventListener('click', () => {
-                addButtons[i].style.display = 'none';
-                quantityWrappers[i].style.display = 'flex';
-                
-                // Increase notification count when Add to Cart is clicked
-                notificationCount++;
-                updateNotificationBadge();
-            });
-        
-            incrementButtons[i].addEventListener('click', () => {
-                quantityInputs[i].value = parseInt(quantityInputs[i].value) + 1;
-                
-                // Increase notification count when increment button is clicked
-                notificationCount++;
-                updateNotificationBadge();
-            });
-        
-            decrementButtons[i].addEventListener('click', () => {
-                const currentValue = parseInt(quantityInputs[i].value);
-        
-                if (currentValue > 1) {
-                    quantityInputs[i].value = currentValue - 1;
-                } else {
-                    addButtons[i].style.display = 'block';
-                    quantityWrappers[i].style.display = 'none';
-                }
-                
-                // Decrease notification count when decrement button is clicked
-                notificationCount--;
-                updateNotificationBadge();
-            });
-        }
-        
-        // Function to update the notification badge
-        function updateNotificationBadge() {
-            notificationBadge.textContent = notificationCount;
-        }
-         {% endcomment %}
-    {% comment %} function acceptCookies() {
-        document.getElementById('cookieConsent').style.display = 'none';
-        // Set a cookie to remember that the user has accepted cookies
-        document.cookie = "cookie_consent_accepted=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
-    }// Define variables for cart count {% endcomment %}
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM content loaded");
 
-    document.addEventListener("DOMContentLoaded", function() {
-        console.log("DOM content loaded");
-    
-        let openShopping = document.querySelector("#shopping-cart");
-        console.log("openShopping:", openShopping);
-    
-        let closeShopping = document.querySelector(".closeShopping");
-        console.log("closeShopping:", closeShopping);
-    
-        let list = document.querySelector(".list");
-        console.log("list:", list);
-    
-        let listCard = document.querySelector(".listCard");
-        console.log("listCard:", listCard);
-    
-        let body = document.querySelector("body");
-        console.log("body:", body);
-    
-        let total = document.querySelector(".total");
-        console.log("total:", total);
-    
-        let quantity = document.querySelector(".notification-badge");
-        console.log("quantity:", quantity);
-    
-        let checkOutButton = document.querySelector('.checkOut');
-        console.log("checkOutButton:", checkOutButton);
-    
-        let products = [];
-        let listCards = [];
-    
-        openShopping.addEventListener("click", () => {
-            console.log("Shopping cart clicked");
-            body.classList.add("active");
+    let openShopping = document.querySelector("#shopping-cart");
+    console.log("openShopping:", openShopping);
+
+    let closeShopping = document.querySelector(".closeShopping");
+    console.log("closeShopping:", closeShopping);
+
+    let list = document.querySelector(".list");
+    console.log("list:", list);
+    let listCard = document.querySelector(".listCard");
+    console.log("listCard:", listCard);
+    let body = document.querySelector("body");
+    console.log("body:", body);
+
+    let total = document.querySelector(".total");
+    console.log("total:", total);
+
+    let quantity = document.querySelector(".notification-badge");
+    console.log("quantity:", quantity);
+
+    let checkOutButton = document.querySelector('.checkOut');
+    console.log("checkOutButton:", checkOutButton);
+
+    let products = [];
+    let listCards = [];
+
+    openShopping.addEventListener("click", () => {
+        console.log("Shopping cart clicked");
+        body.classList.add("active");
+    });
+
+    closeShopping.addEventListener("click", () => {
+        console.log("Close shopping clicked");
+        body.classList.remove("active");
+    });
+
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/products/list/?format=json");
+            const data = await response.json();
+            products = data;
+            initApp();
+            console.log("data:", data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    function initApp() {
+        products.forEach((product) => {
+            let newDiv = document.createElement("div");
+            newDiv.classList.add("item");
+            newDiv.innerHTML = `
+                <img src="http://127.0.0.1:8000/${product.image}">
+                <div class="title">${product.name}</div>
+                <div class="price">$${product.price.toLocaleString()}</div>
+                <button data-id="${product.id}" class="addToCart">Add To Cart</button>`;
+            list.appendChild(newDiv);
         });
-    
-        closeShopping.addEventListener("click", () => {
-            console.log("Close shopping clicked");
-            body.classList.remove("active");
+
+        document.querySelectorAll('.addToCart').forEach(button => {
+            button.addEventListener('click', addToCart);
         });
-    
-        const fetchProducts = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:8000/api/products/list/?format=json");
-                const data = await response.json();
-                products = data;
-                initApp();
-                console.log("data:", data.name);
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        };
-    
-        fetchProducts();
-    
-        function initApp() {
-            products.forEach((product) => {
-                let newDiv = document.createElement("div");
-                newDiv.classList.add("item");
+    }
+
+    function addToCart(event) {
+        let productId = parseInt(event.target.dataset.id);
+        let existingItem = listCards.find((item) => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            listCards.push({ id: productId, quantity: 1 });
+        }
+        updateCart();
+    }
+
+    function updateCart() {
+        listCard.innerHTML = "";
+        let totalPrice = 0;
+        listCards.forEach((value) => {
+            let product = products.find((item) => item.id === value.id);
+            if (product) {
+                totalPrice += product.price * value.quantity;
+                let newDiv = document.createElement("li");
                 newDiv.innerHTML = `
-                    <img src="http://127.0.0.1:8000/${product.image}">
-                    <div class="title">${product.name}</div>
-                    <div class="price">$${product.price.toLocaleString()}</div>
-                    <button data-id="${product.id}" class="addToCart">Add To Cart</button>`;
-                list.appendChild(newDiv);
-            });
-    
-            document.querySelectorAll('.addToCart').forEach(button => {
-                button.addEventListener('click', addToCart);
-            });
-        }
-    
-        function addToCart(event) {
-            let productId = parseInt(event.target.dataset.id);
-            let existingItem = listCards.find((item) => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                listCards.push({ id: productId, quantity: 1 });
+                    <div><img src="http://127.0.0.1:8000/${product.image}"/></div>
+                    <div>${product.name}</div>
+                    <div>$${(product.price * value.quantity).toLocaleString()}</div>
+                    <div>
+                        <button onclick="changeQuantity(${value.id}, ${value.quantity - 1})">-</button>
+                        <div class="count">${value.quantity}</div>
+                        <button onclick="changeQuantity(${value.id}, ${value.quantity + 1})">+</button>
+                    </div>`;
+                listCard.appendChild(newDiv);
             }
-            updateCart();
+        });
+        total.innerText = totalPrice.toLocaleString();
+        updateBadge();
+        updateLocalStorage(); // Update local storage after updating the cart
+    }
+
+    function changeQuantity(id, quantity) {
+        if (quantity === 0) {
+            listCards = listCards.filter((item) => item.id != id);
+        } else {
+            let itemIndex = listCards.findIndex((item) => item.id === id);
+            listCards[itemIndex].quantity = Number(quantity);
         }
-    
-        function updateCart() {
-            listCard.innerHTML = "";
-            let totalPrice = 0;
-            listCards.forEach((value) => {
-                let product = products.find((item) => item.id === value.id);
-                if (product) {
-                    totalPrice += product.price * value.quantity;
-                    let newDiv = document.createElement("li");
-                    newDiv.innerHTML = `
-                        <div><img src="http://127.0.0.1:8000/${product.image}"/></div>
-                        <div>${product.name}</div>
-                        <div>$${(product.price * value.quantity).toLocaleString()}</div>
-                        <div>
-                            <button onclick="changeQuantity(${value.id}, ${value.quantity - 1})">-</button>
-                            <div class="count">${value.quantity}</div>
-                            <button onclick="changeQuantity(${value.id}, ${value.quantity + 1})">+</button>
-                        </div>`;
-                    listCard.appendChild(newDiv);
-                }
-            });
-            total.innerText = totalPrice.toLocaleString();
-            updateBadge();
-            updateLocalStorage(); // Update local storage after updating the cart
-        }
-    
-        function changeQuantity(id, quantity) {
-            if (quantity === 0) {
-                listCards = listCards.filter((item) => item.id != id);
-            } else {
-                let itemIndex = listCards.findIndex((item) => item.id === id);
-                listCards[itemIndex].quantity = Number(quantity);
-            }
-            updateCart();
-        }
-    
-        function updateBadge() {
-            let totalQuantity = listCards.reduce((total, item) => total + item.quantity, 0);
-            quantity.innerText = totalQuantity;
-        }
-    
-        // Update local storage with the current cart items
-        function updateLocalStorage() {
-            localStorage.setItem('cartItems', JSON.stringify(listCards));
-        }
-    
-        // Checkout function triggered by the total button
-        total.addEventListener('click', checkout);
-    
+        updateCart();
+    }
+
+    function updateBadge() {
+        let totalQuantity = listCards.reduce((total, item) => total + item.quantity, 0);
+        quantity.innerText = totalQuantity;
+    }
+
+    // Update local storage with the current cart items
+    function updateLocalStorage() {
+        localStorage.setItem('cartItems', JSON.stringify(listCards));
+    }
+
+    // Checkout function triggered by the total button
+    total.addEventListener('click', checkout);
+
         async function checkout() {
             if (listCards.length > 0) {
                 const csrftoken = getCookie('csrftoken');
-    
+        
                 try {
-                    await fetch("http://127.0.0.1:8000/orders/api/order-item-creator/", {
+                    const response = await fetch("http://127.0.0.1:8000/orders/api/order-item-creator/", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -679,42 +626,51 @@
                         },
                         body: JSON.stringify(listCards)
                     });
-    
-                    // Clear the shopping cart after successful checkout
-                    listCards = [];
-                    updateCart();
+        
+                    if (response.ok) {
+                        // Clear the shopping cart after successful checkout
+                        listCards = [];
+                        updateCart();
+        
+                        // Clear cart items from local storage
+                        localStorage.removeItem('cartItems');
+                    } else {
+                        throw new Error('Failed to checkout');
+                    }
                 } catch (error) {
                     console.error("Error during checkout:", error);
                 }
             }
         }
-    
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-    
-        // Check if there are any items saved in local storage when the DOM is loaded
-        const storedCartItems = localStorage.getItem('cartItems');
-        if (storedCartItems) {
-            // Parse the JSON string and initialize the listCards array
-            listCards = JSON.parse(storedCartItems);
-    
-            // Update the cart UI using the retrieved items
-            updateCart();
-        }
-    });
-    
+        return cookieValue;
+    }
+
+    // Check if there are any items saved in local storage when the DOM is loaded
+    let storedCartItems = localStorage.getItem('cartItems');
+    fetchProducts();
+    if (storedCartItems) {
+        // Parse the JSON string and initialize the listCards array
+        listCards = JSON.parse(JSON.stringify(JSON.parse(storedCartItems)))
+
+        // Update the cart UI using the retrieved items
+       
+    }
+    updateCart(); 
+});
+
     </script>
 </body>
 </html>
