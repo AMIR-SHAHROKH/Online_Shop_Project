@@ -1,0 +1,75 @@
+.venv
+venv
+images/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local development settings
+*.env
+*.sqlite3
+
+# Secret key
+secret_key.txt
+
+# Media files
+media/
+
+node_modules/
+
+melipayamak/
+
+# Database
+db.sqlite3
+# Global gitignore
+*.sqlite3
+
+Dockerfile
+
+package-lock.json
+package.json
+*.js
+.js
+# Static files
+static/
+
+# Log files
+*.log
+
+# Virtual environment
+venv/
+env/
+ 
+# Ignore pipenv virtual environment
+/.venv/
+
+# Ignore IDE settings
+.idea/
+.vscode/
+
+# Ignore migrations
+**/migrations/
+
+# Ignore generated files
+*.DS_Store
+Thumbs.db
+
+# Ignore Python bytecode files
+*.pyc
+
+# Ignore coverage report
+htmlcov/
+
+# Ignore test database
+test_db.sqlite3
+
+# Ignore local configuration
+local_settings.py
+
+# Ignore any backup or temporary files
+*~
+*.swp
+db.sqlite3
+.pys

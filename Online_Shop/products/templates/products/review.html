@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-TjW0fLl5lMllZ9bmPjTtGWmohshj3zHvOlAuFg3H7upi9e6rPA2r14QFXT3VZZe1yM9j8I43EJfTv0lPkIbrpw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: lightcyan; /* changed to light cyan */
+            color: #000; /* changed to black */
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: lightgray;
+            padding: 30px;
+        }
+        .product-actions {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .add-button {
+            background-color: cyan;
+            color: #000;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quantity-wrapper {
+            display: none;
+            align-items: center;
+            margin-left: 10px;
+        }
+        .quantity-button {
+            background-color: cyan;
+            color: #000;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .review-box {
+            background-color: lightcyan;
+            border-radius: 10px;
+        }
+        
+    </style>   
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#account">Account</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cart">Cart</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Product Details -->
+    <div class="container mt-5" style="margin-bottom: 3rem;">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="products/IMG-20191218-083432_600x600.webp" alt="Placeholder Image" class="img-fluid">
+            </div>
+            {% for product in products %}
+            <div class="col-md-6" style="margin-top: 10px;">
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.description }}</p>
+                <p><strong>Price:</strong> ${{ product.price }}</p>
+                {% if product.discount %}
+                <p><strong>Discount:</strong> {{ product.discount }}%</p>
+                {% endif %}
+                <p><strong>Categories:</strong>
+                    {% for category in product.categories.all %}
+                    {{ category.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <div class="product-actions">
+                    <button class="add-button">Add to Cart</button>
+                    <div class="quantity-wrapper">
+                        <button class="quantity-button decrement">-</button>
+                        <input type="text" class="quantity-input" value="1">
+                        <button class="quantity-button increment">+</button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Review Section -->
+    <section style="background-color: lightcyan;">
+        <div class="container my-5 py-5 text-dark">
+          <div class="row d-flex justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-6 review-box" style="padding: 0%;">
+              <div class="card">
+                <div class="card-body p-4">
+                  <div class="d-flex flex-start w-100">
+                    <img class="rounded-circle shadow-1-strong me-3"
+                      src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(21).webp" alt="avatar" width="65"
+                      height="65" />
+                    <div class="w-100">
+                      <h5>Add a comment</h5>
+                      <div class="rating mb-3" data-mdb-toggle="rating">
+                        <i class="far fa-star fa-sm text-danger" title="Bad"></i>
+                        <i class="far fa-star fa-sm text-danger" title="Poor"></i>
+                        <i class="far fa-star fa-sm text-danger" title="OK"></i>
+                        <i class="far fa-star fa-sm text-danger" title="Good"></i>
+                        <i class="far fa-star fa-sm text-danger" title="Excellent"></i>
+                      </div>
+                      <div class="form-outline">
+                        <textarea class="form-control" id="textAreaExample" rows="4"></textarea>
+                        <label class="form-label" for="textAreaExample">What is your view?</label>
+                      </div>
+                      <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-danger">
+                          Send <i class="fas fa-long-arrow-alt-right ms-1"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- JavaScript for Quantity Buttons -->
+    <script>
+        const addButtons = document.querySelectorAll('.add-button');
+        const quantityWrappers = document.querySelectorAll('.quantity-wrapper');
+        
+        for (let i = 0; i < addButtons.length; i++) {
+            addButtons[i].addEventListener('click', () => {
+                addButtons[i].style.display = 'none';
+                quantityWrappers[i].style.display = 'flex';
+            });
+        }
+        
+        const incrementButtons = document.querySelectorAll('.increment');
+        const decrementButtons = document.querySelectorAll('.decrement');
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        
+        for (let i = 0; i < incrementButtons.length; i++) {
+            incrementButtons[i].addEventListener('click', () => {
+                quantityInputs[i].value = parseInt(quantityInputs[i].value) + 1;
+            });
+        
+            decrementButtons[i].addEventListener('click', () => {
+                const currentValue = parseInt(quantityInputs[i].value);
+        
+                if (currentValue > 1) {
+                    quantityInputs[i].value = currentValue - 1;
+                } else {
+                    addButtons[i].style.display = 'block';
+                    quantityWrappers[i].style.display = 'none';
+                }
+            });
+        }
+        <script>
+            const stars = document.querySelectorAll('.rating i');
+        
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    resetStars();
+        
+                    for (let i = 0; i <= index; i++) {
+                        stars[i].classList.add('fas');
+                        stars[i].classList.remove('far');
+                    }
+                });
+        
+                star.addEventListener('mouseover', function() {
+                    resetStars();
+        
+                    for (let i = 0; i <= index; i++) {
+                        stars[i].classList.add('fas');
+                        stars[i].classList.remove('far');
+                    }
+                });
+        
+                star.addEventListener('mouseout', function() {
+                    resetStars();
+                });
+            });
+        
+            function resetStars() {
+                stars.forEach((star) => {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                });
+            }
+        </script>
+        
+    </script>
+</body>
+</html>

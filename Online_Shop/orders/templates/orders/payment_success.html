@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Confirmation</title>
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.payment-confirm {
+    text-align: center;
+}
+
+.tick-icon {
+    width: 50px;
+}
+
+.payment-status {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.final-amount {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+}
+
+/* Class for paid status */
+.paid {
+    background-color: greenyellow; /* Green background color */
+}
+
+/* Class for not paid status */
+.not-paid {
+    background-color: grey; /* Grey background color */
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="container {% if data.payment_status == 'paid' %} paid {% else %} not-paid {% endif %}">
+        <div class="payment-confirm">
+            {% if payment_status == "paid" %}
+            <img src="/media/orders/images/Success.png" alt="Success Icon" class="tick-icon">
+            {% elif payment_status == "pending" %}
+            <img src="/media/orders/images/Failed.png" alt="Failure Icon" class="tick-icon">
+            {% endif %}
+            <div id="final-amounts">
+                <!-- Data will be displayed here -->
+            </div>
+            <div id="shipping-address">
+                <!-- Shipping address will be displayed here -->
+            </div>
+            <!-- Button to capture screenshot -->
+            <button onclick="captureScreenshot()">Capture Screenshot</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script>
+    // Fetch data from the API when the page is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchFinalAmounts();
+        fetchShippingAddress();
+    });
+
+    function fetchFinalAmounts() {
+        var orderId = "{{ order_id }}";
+        var apiUrl = 'http://127.0.0.1:8000/orders/api/final_amount/' + orderId;
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                displayFinalAmounts(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    function displayFinalAmounts(data) {
+        var finalAmountsDiv = document.getElementById('final-amounts');
+        finalAmountsDiv.innerHTML = '';
+        var finalAmountElement = document.createElement('div');
+        finalAmountElement.innerHTML = `
+            <p>Order ID: ${data.order_id}</p>
+            <p>Discounted Amount: ${data.discounted_amount}</p>
+            <p>Payment Status: ${data.payment_status}</p>
+        `;
+        finalAmountsDiv.appendChild(finalAmountElement);
+    }
+
+    function fetchShippingAddress() {
+        fetch('http://127.0.0.1:8000/profile/api/address-check/')
+            .then(response => response.json())
+            .then(addressData => {
+                displayShippingAddress(addressData);
+            })
+            .catch(error => console.error('Error fetching shipping address:', error));
+    }
+
+    function displayShippingAddress(addressData) {
+        var shippingAddressDiv = document.getElementById('shipping-address');
+        var shippingAddressElement = document.createElement('div');
+        shippingAddressElement.innerHTML = `
+            <h3>Shipping Address</h3>
+            <p>Street: ${addressData.street}</p>
+            <p>City: ${addressData.city}</p>
+            <p>State: ${addressData.state}</p>
+            <p>Postal Code: ${addressData.postal_code}</p>
+            <p>Country: ${addressData.country}</p>
+        `;
+        shippingAddressDiv.appendChild(shippingAddressElement);
+    }
+
+    function captureScreenshot() {
+        window.scrollTo(0, 0);
+        setTimeout(function() {
+            window.print();
+        }, 500);
+    }
+</script>
+
+</body>
+</html>

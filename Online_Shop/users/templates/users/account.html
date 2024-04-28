@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <title>Online Shop</title>
+    <style>
+
+        body {
+            background-color: lightcyan;
+          }
+      
+          .flex-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+          }
+      
+          .flex-item {
+            margin-bottom: 20px;
+            text-align: center;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            width: 300px;
+            cursor: pointer;
+          }
+      
+          .flex-item:hover {
+            background-color: lightblue;
+          }
+      
+          .flex-item h2 {
+            margin-bottom: 20px;
+          }
+        
+</style>
+</head>
+<body>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Your Online Shop</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                  <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+                  <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:shopping_cart' %}'">Cart</a></li>
+                </ul>
+            </div>
+        </nav>
+
+          <div class="flex-container">
+            <!-- Update the onclick attribute to navigate to the appropriate Django URLs -->
+            <button onclick="location.href='{% url 'users:signup' %}'" class="flex-item">
+              <h2>Sign Up</h2>
+            </button>
+            <button onclick="location.href='{% url 'users:login' %}'" class="flex-item">
+              <h2>Login with Username and Password</h2>
+            </button>
+            <button onclick="location.href='{% url 'users:log in with otp' %}'" class="flex-item">
+              <h2>Login with OTP Code</h2>
+            </button>
+          </div>
+</body>
+</html>

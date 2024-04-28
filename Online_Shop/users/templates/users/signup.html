@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: lightcyan;
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .container {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+        }
+
+        .container h2 {
+            text-align: center;
+        }
+
+        .container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .container input[type="text"],
+        .container input[type="email"],
+        .container input[type="password"],
+        .container textarea {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .container button {
+            width: 100%;
+            padding: 10px;
+            background-color: blue;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .signup-link a {
+            color: blue;
+            text-decoration: underline;
+        }
+        .error {
+            color : red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Your Online Shop</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account' %}'">Account</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+        {% endif %}
+            <!-- User Form Fields -->
+            <label for="username">Username:</label>
+            {{ user_form.username }}
+            {% for error in user_form.username.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <label for="email">Email:</label>
+            {{ user_form.email }}
+            {% for error in user_form.email.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+            <label for="email">Phone number:</label>
+            {{ user_form.phone_number }}
+            {% for error in user_form.phone_number.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+
+            <label for="password">Password:</label>
+            {{ user_form.password }}
+            {% for error in user_form.password.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <!-- Address Form Fields -->
+            <label for="street">Street:</label>
+            {{ address_form.street }}
+            {% for error in address_form.street.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <label for="city">City:</label>
+            {{ address_form.city }}
+            {% for error in address_form.city.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <label for="state">State:</label>
+            {{ address_form.state }}
+            {% for error in address_form.state.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <label for="postal_code">Postal Code:</label>
+            {{ address_form.postal_code }}
+            {% for error in address_form.postal_code.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+    
+            <label for="country">Country:</label>
+            {{ address_form.country }}
+            {% for error in address_form.country.errors %}
+                <p class="error">{{ error }}</p>
+            {% endfor %}
+
+            <button type="submit">Sign Up</button>
+        </form>
+        <div class="signup-link">
+            <p>If you already have an account, <a onclick="location.href='{% url 'users:login' %}'" style="color: blue;">Login</a> or
+            <a onclick="location.href='{% url 'users:log in with otp' %}'" style="color: blue;">OTP Login</p>
+        </div>
+    </div>
+</body>
+
+</html>

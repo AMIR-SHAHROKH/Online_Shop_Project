@@ -1,0 +1,144 @@
+   <!doctype html>
+    <html lang="en">
+    
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <title>Profile</title>
+        <style>
+            body {
+                background-color: #6fe3ff;
+            }
+            .container {
+                display: flex;
+                align-items: center;
+                text-align: center;
+                justify-content: center;
+            }
+            .list-group-item.active {
+                background: #ffc107;
+            }
+            /* end common class */
+            .top-status ul {
+                list-style: none;
+                display: flex;
+                justify-content: space-around;
+                justify-content: center;
+                flex-wrap: wrap;
+                padding: 0;
+                margin: 0;
+            }
+
+            .top-status ul li.active {
+                border-color: #ffc107;
+                box-shadow: 1px 1px 20px 1px #ffc107 inset;
+            }
+            /* end top status */
+            
+            ul.timeline {
+                list-style-type: none;
+                position: relative;
+            }
+            ul.timeline:before {
+                content: ' ';
+                background: #d4d9df;
+                display: inline-block;
+                left: 29px;
+                width: 2px;
+                height: 100%;
+                z-index: 400;
+            }
+            ul.timeline > li {
+                margin: 20px 0;
+                padding-left: 30px;
+            }
+            ul.timeline > li:before {
+                content: '\2713';
+                background: #fff;
+                display: inline-block;
+                position: absolute;
+                border-radius: 50%;
+                border: 0;
+                left: 5px;
+                width: 50px;
+                height: 50px;
+                z-index: 400;
+                text-align: center;
+                line-height: 50px;
+                color: #d4d9df;
+                font-size: 24px;
+                border: 2px solid #d4d9df;
+            }
+            ul.timeline > li.active:before {
+                content: '\2713';
+                background: #28a745;
+                display: inline-block;
+                position: absolute;
+                border-radius: 50%;
+                border: 0;
+                left: 5px;
+                width: 50px;
+                height: 50px;
+                z-index: 400;
+                text-align: center;
+                line-height: 50px;
+                color: #fff;
+                font-size: 30px;
+                border: 2px solid #28a745;
+            }
+
+            /* end timeline */
+        </style>
+    </head>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a> <!-- Search form -->
+    </nav>
+
+    <body>
+        <section class="my-5">
+            <div class="container" style="">
+  
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        <img src="https://bootdey.com/img/Content/avatar/avatar6.png" alt="Admin"
+                                            class="rounded-circle p-1 bg-warning" width="110">
+                                        <div class="mt-3">
+                                            <h4>{{ user.username }}</h4>
+                                            <p><b>Username:</b> {{ user.username }} </p>
+                                            <p><b>Email:</b> {{ user.email }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="list-group list-group-flush text-center mt-4" style="border: 1px solid black;">
+                                        <a href="{% url 'users:user-info' %}" class="list-group-item list-group-item-action border-0 active">
+                                            Profile Informaton
+                                        </a>
+                                        <a href="{% url 'users:user-orders' username=user.username %}" class="list-group-item list-group-item-action border-0">Orders</a>
+                                        <a href="{% url 'users:addresses' %}" class="list-group-item list-group-item-action border-0">Address Book</a>
+                                        <a href="{% url 'users:logout' %}" class="list-group-item list-group-item-action border-0">Logout</a>
+                                    </div>
+                                </div>
+                            </div>
+                      
+                    </div>
+            </div>
+        </section>
+    
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+</html>

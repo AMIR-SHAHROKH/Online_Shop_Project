@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order List</title>
+</head>
+<body>
+    <div id="order-list"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/orders/api/orders')
+                .then(response => response.json())
+                .then(data => {
+                    const orderList = document.getElementById('order-list');
+                    data.forEach(order => {
+                        const orderDiv = document.createElement('div');
+                        orderDiv.textContent = `Order ID: ${order.id}, User: ${order.user}, Total Amount: ${order.total_amount}`;
+                        orderList.appendChild(orderDiv);
+                    });
+                })
+                .catch(error => console.error('Error fetching orders:', error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Address Data</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #6fe3ff;
+        }
+        
+        .navbar {
+            margin-bottom: 20px; /* Add margin to create space between navbar and container */
+        }
+        
+        .container {
+            background-color: #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin: 20px auto; /* Center the container and add margin from top */
+            max-width: 600px; /* Limit container width */
+        }
+        
+        .address-profile {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .address-item {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .selectShippingAddress {
+            background-color: #ffc107; /* Default background color */
+            color: #000; /* Default text color */
+            border: none;
+            border-radius: 20px; /* Rounded corners */
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Smooth transition on hover */
+            margin-top: 10px;
+        }
+        
+        .selectShippingAddress:hover {
+            background-color: #ffdb4d; /* Change background color on hover */
+        }
+        
+        strong {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .add-address-button {
+            margin-top: 20px;
+        }
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username %}'">Account</a></li>
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a> <!-- Search form -->
+        </div>
+    </nav>
+    <h1 style="text-align: center;">{{ user.username }}'s Address:</h1>
+    <div style="text-align: center;">
+    <div class="container">
+        {% if user.is_authenticated %}
+            {% for address in user.addresses.all %}
+            <div>
+                <div class="address-profile" style="margin-top: 20px;">
+                    <div class="address-item">
+                        <strong>City:</strong> <span>{{ address.city }}</span>
+                    </div>
+                    <div class="address-item">
+                        <strong>State:</strong> <span>{{ address.state }}</span>
+                    </div>
+                    <div class="address-item">
+                        <strong>Postal Code:</strong> <span>{{ address.postal_code }}</span>
+                    </div>
+                    <div class="address-item">
+                        <strong>Country:</strong> <span>{{ address.country }}</span>
+                    </div>
+                    <div class="address-item">
+                        <strong>Shipping Address: </strong> <span>{{ address.is_shipping_address }}</span>
+                    </div>
+                    <div>
+                        {% if address.is_shipping_address %}
+                            <!-- Hide the button if it's the shipping address -->
+                            <button class="selectShippingAddress" data-address-id="{{ address.address_id }}" style="display: none;">Shipping Address</button>
+                        {% else %}
+                            <!-- Show the button if it's not the shipping address -->
+                            <button class="selectShippingAddress" data-address-id="{{ address.address_id }}">Select This As Your Shipping Address</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+            {% endfor %}
+        </div>
+            <!-- Add button for adding another address -->
+
+        {% else %}
+            <p>Please log in to view your address data.</p>
+        {% endif %}
+        
+    </div>
+    <button class="btn btn-primary add-address-button"  onclick="location.href='{% url 'users:user-info' %}'">Add Another Address</button>
+    </div>
+    <!-- Bootstrap JS and dependencies (jQuery, Popper.js) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.querySelectorAll('.selectShippingAddress').forEach(button => {
+            button.addEventListener('click', function() {
+                var selectedAddressId = this.getAttribute('data-address-id');
+                var xhr = new XMLHttpRequest();
+                xhr.open('PUT', 'http://127.0.0.1:8000/profile/api/addresses/');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        alert('Shipping address selected successfully');
+                        // Reload the page after successful selection
+                        location.reload();
+                    } else {
+                        alert('Failed to select shipping address');
+                    }
+                };
+                xhr.send(JSON.stringify({ address_id: selectedAddressId }));
+            });
+        });
+    </script>
+</body>
+</html>

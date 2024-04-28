@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>Categorized Product List</title>
+    <style>
+        body {
+            background-color: #6fe3ff;
+            font-family: Arial, sans-serif;
+           
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+        
+        #category-buttons {
+            margin-right: 20px;
+            display: flex;
+            flex-direction: row;
+            
+        }
+        
+        .category-button {
+            background-color: #ffc107;
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            
+            border: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .product-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+        }
+        
+        .product-image {
+            width: 200px;
+            height: auto;
+        }
+        
+        .product-name {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+        
+        .product-price {
+            font-weight: bold;
+        }
+        
+        .product-description {
+            margin-bottom: 10px;
+        }
+        .category-button {
+            height: 10vh;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{ user.email }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">                
+                {% if user.is_athenticated %} 
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:logged_in_main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:profile' username=user.username  %}'">Account</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'products:main_page' %}'">Home</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="location.href='{% url 'users:account'  %}'">Account</a></li>
+                {% endif %}
+            </ul>
+            <a class="nav-link" onclick="location.href='{% url 'products:search' %}'"><img src="../../media/searching-bar.png" alt="search" style="width: 50px;"></a>     <!-- Search form -->
+    </nav>
+<div style="padding: 20px;">
+
+
+    <div id="category-buttons">
+            <!-- Category buttons will be populated here -->
+        </div>
+    <div class="container">
+
+        <div id="product-list">
+            <!-- Products will be populated here -->
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch data from API
+            fetch('http://127.0.0.1:8000/api/products/list/')
+                .then(response => response.json())
+                .then(data => {
+                    const categoryButtonsDiv = document.getElementById('category-buttons');
+                    const productListDiv = document.getElementById('product-list');
+        
+                    // Create category buttons and associate them with their products
+                    const categories = {};
+                    data.forEach(product => {
+                        product.categories.forEach(category => {
+                            if (!categories[category.name]) {
+                                categories[category.name] = [];
+                            }
+                            categories[category.name].push(product);
+                        });
+                    });
+        
+                    for (const category in categories) {
+                        const categoryButton = document.createElement('button');
+                        categoryButton.textContent = category;
+                        categoryButton.classList.add('category-button');
+                        categoryButton.addEventListener('click', function() {
+                            renderProducts(categories[category]);
+                        });
+                        categoryButtonsDiv.appendChild(categoryButton);
+                    }
+        
+                    // Function to render products based on the selected category
+                    function renderProducts(products) {
+                        productListDiv.innerHTML = ''; // Clear previous products
+                        
+                        products.forEach(product => {
+                            // Create product container
+                            const productContainer = document.createElement('div');
+                            productContainer.classList.add('product-container');
+                            
+                            // Create product box
+                            const productBox = document.createElement('div');
+                            productBox.classList.add('product-box');
+                            productBox.addEventListener('click', function() {
+                                window.location.href = '/product/' + product.slug;
+                            });
+        
+                            // Create product image
+                            const productImage = document.createElement('img');
+                            productImage.src = product.image;
+                            productImage.alt = product.name;
+                            productImage.classList.add('product-image');
+                            
+                            // Create product name
+                            const productName = document.createElement('h3');
+                            productName.classList.add('product-name');
+                            productName.textContent = product.name;
+        
+                            // Create product price
+                            const productPrice = document.createElement('p');
+                            productPrice.classList.add('product-price');
+                            productPrice.textContent = '$' + product.price;
+        
+                            // Create product description
+                            const productDescription = document.createElement('p');
+                            productDescription.classList.add('product-description');
+                            productDescription.textContent = product.description;
+        
+                            // Append elements to product box
+                            productBox.appendChild(productImage);
+                            productBox.appendChild(productName);
+                            productBox.appendChild(productPrice);
+                            productBox.appendChild(productDescription);
+        
+                            // Append product box to product container
+                            productContainer.appendChild(productBox);
+        
+                            // Append product container to product list
+                            productListDiv.appendChild(productContainer);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        });
+    
+        
+    </script>
+</body>
+</html>
